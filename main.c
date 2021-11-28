@@ -4,25 +4,104 @@
 
 #define WEIGHT 10
 #define HEIGHT 15
+#define n_tetramini 20
 
 typedef struct tetramino{
     char type;
     int rotation;
+    int height;
+    int weight;
 }tetramino_t;
 
+/**
+ * creo i tetramini come array globabili in modo da poterli prendere direttamente dentro alle funzioniv
+ */
 
+int i_size = n_tetramini;
+int j_size = n_tetramini;
+int l_size = n_tetramini;
+int o_size = n_tetramini;
+int s_size = n_tetramini;
+int t_size = n_tetramini;
+int z_size = n_tetramini;
+tetramino_t *i_type ;
+tetramino_t *j_type ;
+tetramino_t *l_type ;
+tetramino_t *o_type ;
+tetramino_t *s_type ;
+tetramino_t *t_type ;
+tetramino_t *z_type ;
 
+tetramino_t rotate_tetramino(int rotation, tetramino_t tetramino){
 
-void add_tetraminio(char type, int rotation){
-        if(type!='i'&&type!='z'&&type!='t'&&type!='s'&&type!='l'&&type!='o'&&type!='j'){
-            printf("\nSelezione non valida\n");
-            return;
-        }
-        if(rotation<1 || rotation >4) {
-            printf("\nRotazione non valida\n");
-            return;
-        }
 }
+
+
+
+/**
+ * funzione che ritorna l'ultimo tetramino disponibile
+ * @param type
+ * @return
+ */
+
+tetramino_t get_LastTetramino(char type){ /* ho scelto di partire dalla fine per svuotare l'array di ogni tipo di tetraminio (prendo ogni volta l'utlimo) così posso fare -- e così so che quando la size arriva a 0 ho finito quei tetramini a disposizione*/
+    switch(type){
+        case 'i':
+         i_type=realloc(i_type, --i_size);
+         return i_type[i_size];
+
+        case 'j':
+            j_type=realloc(j_type, --j_size);
+            return i_type[j_size];
+        case 'l':
+            j_type=realloc(j_type, --l_size);
+            return j_type[j_size];
+        case 'o':
+            o_type=realloc(o_type, --o_size);
+            return o_type[o_size];
+
+        case 's':
+            s_type=realloc(s_type, --s_size);
+            return s_type[s_size];
+        case 't':
+            t_type=realloc(t_type, --t_size);
+            return i_type[t_size];
+        case 'z':
+            z_type=realloc(z_type, --z_size);
+            return i_type[z_size];
+        default:
+            printf("Rotto");
+        break;
+    }
+
+
+}
+
+void add_tetraminio(char type, int rotation) {
+    tetramino_t da_inserire;
+    if (type != 'i' && type != 'z' && type != 't' && type != 's' && type != 'l' && type != 'o' && type != 'j') {
+        printf("\nSelezione non valida\n");
+        return;
+    }
+    if (rotation < 1 || rotation > 4) {
+        printf("\nRotazione non valida\n");
+        return;
+    }
+    da_inserire = get_LastTetramino(type);
+    da_inserire = rotate_tetramino(rotation, da_inserire);
+                                                            /* valutare se fare in modo dinamico con un for o con uno siwtch.
+                                                            *Se fatta con il for è necessario definire nella struct del tetramino un vettore "celle" dove
+                                                            * x è la cella vuota e # quella piena, così e possibile farsi ritornare il tetramino girato dalla rotate.
+                                                            *
+                                                            * Se si usa lo switch allora bisogna stare a fare caso per caso a mano, personalmente NON credo sia la miglior scelta per ruotare. Perchè nel momento del effettivo posizionamento sono necessari dei controlli
+                                                             * e per farli serve avere un effettivo "oggetto tetramino" che sia "concreto".
+                                                            */
+}
+
+
+
+
+
 
 /**
  * stampa il capo di gioco
@@ -56,13 +135,16 @@ void print_field( char matrix[HEIGHT][WEIGHT]){
  * @param type
  * @return
  */
-tetramino_t* assign_values(tetramino_t *v, int size, char type){
+tetramino_t* assign_values(tetramino_t *v, int size, char type, int height, int weight){
+    /* FARE UN PICCOLO CONTROLLO PERCHè CREDO CHE NON VADA AD INZIALIZZARE TUTTI E 20 I PEZZI DELL'ARRAY
+     * MA CICLI 20, ANDANDO A MODIFICARE SEMPRE E SOLO LA PRIMA CELLA DELL'ARRAY. */
     int i;
     for(i = 0; i< size; i++){
         v->type = type;
         v->rotation = 0;
+        v->height=height;
+        v->weight=weight;
     }
-
     return v;
 }
 
@@ -85,33 +167,33 @@ void print_array(tetramino_t *v, int size){
  */
 
 
-void print_tetramini(int type, int size){
+void print_tetramini(char type, int size){
     switch(type){
-        case 1:
+        case 'i':
             printf("# # # #\t: %d\n\n", size);
             break;
 
-        case 2:
+        case 'j':
             printf("#\n"
                    "# # #\t: %d\n\n", size);
             break;
-        case 3:
+        case 'l':
             printf("\t#\n"
-                     "# # #\t: %d\n\n", size);
+                   "# # #\t: %d\n\n", size);
             break;
-        case 4:
-                printf("# #\n"
-                       "# #\t\t: %d\n\n", size);
+        case 'o':
+            printf("# #\n"
+                   "# #\t\t: %d\n\n", size);
             break;
-        case 5:
-                printf("  # #\n"
-                       "# #\t\t: %d\n\n", size);
+        case 's':
+            printf("  # #\n"
+                   "# #\t\t: %d\n\n", size);
             break;
-        case 6:
+        case 't':
             printf("  #\n"
                    "# # #\t: %d\n\n", size);
             break;
-        case 7:
+        case 'z':
             printf("# #\n"
                    "  # #\t: %d\n\n", size);
             break;
@@ -124,31 +206,30 @@ void print_tetramini(int type, int size){
 
 
 int main() {
-    int i, j, n_tetramini = 20, win = 0, lose = 0, rotation_selection;
+    int i, j, win = 0, lose = 0,rotation_selection;
     char type_selection;
-    int i_size = n_tetramini, j_size = n_tetramini, l_size = n_tetramini, o_size = n_tetramini, s_size = n_tetramini, t_size = n_tetramini, z_size = n_tetramini;
 
     /* NUMERO DI TETRAMINI PER TIPO A DISPOSIZIONE */
 
 
 
-    tetramino_t *i_type = malloc(n_tetramini * sizeof(*i_type));
-    tetramino_t *j_type = malloc(n_tetramini * sizeof(*j_type));
-    tetramino_t *l_type = malloc(n_tetramini * sizeof(*l_type));
-    tetramino_t *o_type = malloc(n_tetramini * sizeof(*o_type));
-    tetramino_t *s_type = malloc(n_tetramini * sizeof(*s_type));
-    tetramino_t *t_type = malloc(n_tetramini * sizeof(*t_type));
-    tetramino_t *z_type = malloc(n_tetramini * sizeof(*z_type));
+    i_type = malloc(n_tetramini * sizeof(*i_type));
+    j_type = malloc(n_tetramini * sizeof(*j_type));
+    l_type = malloc(n_tetramini * sizeof(*l_type));
+    o_type = malloc(n_tetramini * sizeof(*o_type));
+    s_type = malloc(n_tetramini * sizeof(*s_type));
+    t_type = malloc(n_tetramini * sizeof(*t_type));
+    z_type = malloc(n_tetramini * sizeof(*z_type));
 
 
 
-    assign_values(i_type, n_tetramini, 'i');
-    assign_values(j_type, n_tetramini, 'j');
-    assign_values(l_type, n_tetramini, 'l');
-    assign_values(o_type, n_tetramini, 'o');
-    assign_values(s_type, n_tetramini, 's');
-    assign_values(t_type, n_tetramini, 't');
-    assign_values(z_type, n_tetramini, 'z');
+    assign_values(i_type, i_size, 'i',1,4);
+    assign_values(j_type, j_size, 'j',2,2);
+    assign_values(l_type, l_size, 'l',2,3);
+    assign_values(o_type, o_size, 'o',2,2);
+    assign_values(s_type, s_size, 's',2,3);
+    assign_values(t_type, t_size, 't',2,3);
+    assign_values(z_type, z_size, 'z',2,3);
 
     char field[HEIGHT][WEIGHT];
     for(i = 0; i < HEIGHT; ++i){
@@ -180,32 +261,32 @@ int main() {
     }*/
 
     /* CAMPO DA GIOCO  */
-   /* while(win == 0 && lose == 0){*/
-        printf("TETRAMINI A DISPOSIZIONE: \n");
+    /* while(win == 0 && lose == 0){*/
+    printf("TETRAMINI A DISPOSIZIONE: \n");
 
-        print_tetramini(1, i_size);
-        print_tetramini(2, j_size);
-        print_tetramini(3, l_size);
-        print_tetramini(4, o_size);
-        print_tetramini(5, s_size);
-        print_tetramini(6, t_size);
-        print_tetramini(7, z_size);
+    print_tetramini('i', i_size);
+    print_tetramini('j', j_size);
+    print_tetramini('l', l_size);
+    print_tetramini('o', o_size);
+    print_tetramini('s', s_size);
+    print_tetramini('t', t_size);
+    print_tetramini('z', z_size);
 
-        printf("\n\n------------ GAME FIELD: ------------\n\n");
-
-
-
-        /* SELEZIONE TETRAMINO  */
+    printf("\n\n------------ GAME FIELD: ------------\n\n");
 
 
 
-        print_field(field);
+    /* SELEZIONE TETRAMINO  */
 
-        printf("\n\n\nSeleziona un tetramino (inserisci un carattere tra i, j, l, o, s, t, z): ");
-        scanf("%c", &type_selection);
-        printf("\nSeleziona una rotazione (inserisci un numero tra 1 e 4): ");
-        scanf("%d", &rotation_selection);
-        add_tetraminio(type_selection,rotation_selection);
+
+
+    print_field(field);
+
+    printf("\n\n\nSeleziona un tetramino (inserisci un carattere tra i, j, l, o, s, t, z): ");
+    scanf("%c", &type_selection);
+    printf("\nSeleziona una rotazione (inserisci un numero tra 1 e 4): ");
+    scanf("%d", &rotation_selection);
+    add_tetraminio(type_selection,rotation_selection);
 
 
 
@@ -218,5 +299,4 @@ int main() {
     return 0;
 
 }
-
 
