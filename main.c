@@ -35,9 +35,6 @@ tetramino_t *z_type ;
 tetramino_t rotate_tetramino(int rotation, tetramino_t tetramino){
 
 }
-
-
-
 /**
  * funzione che ritorna l'ultimo tetramino disponibile
  * @param type
@@ -77,7 +74,9 @@ tetramino_t get_LastTetramino(char type){ /* ho scelto di partire dalla fine per
 
 }
 
-void add_tetraminio(char type, int rotation) {
+
+
+void add_tetramino(char type, int rotation) {
     tetramino_t da_inserire;
     if (type != 'i' && type != 'z' && type != 't' && type != 's' && type != 'l' && type != 'o' && type != 'j') {
         printf("\nSelezione non valida\n");
@@ -97,6 +96,7 @@ void add_tetraminio(char type, int rotation) {
      * e per farli serve avere un effettivo "oggetto tetramino" che sia "concreto".
     */
 }
+
 
 
 
@@ -243,28 +243,6 @@ int main() {
         }
     }
 
-    /* prove
-    print_array(i_type, n_tetramini);
-    print_array(j_type, n_tetramini);
-    print_array(l_type, n_tetramini);
-    print_array(o_type, n_tetramini);
-    print_array(s_type, n_tetramini);
-    print_array(t_type, n_tetramini);
-    print_array(v_type, n_tetramini);
-
-    */
-
-    /* TETRAMINI
-
-    printf("\n--------- TETRAMINI: ---------\n\n");
-
-    for(i = 1; i < 8; i++){
-        printf("Tetramino numero %d:", i);
-        printf("\n");
-        print_tetramino(i);
-        printf("\n");
-    }*/
-
     /* CAMPO DA GIOCO  */
     /* while(win == 0 && lose == 0){*/
     printf("TETRAMINI A DISPOSIZIONE: \n");
@@ -291,7 +269,7 @@ int main() {
     scanf("%c", &type_selection);
     printf("\nSeleziona una rotazione (inserisci un numero tra 1 e 4): ");
     scanf("%d", &rotation_selection);
-    add_tetraminio(type_selection,rotation_selection);
+    add_tetramino(type_selection,rotation_selection);
 
 
 
