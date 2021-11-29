@@ -14,7 +14,7 @@ typedef struct tetramino{
 }tetramino_t;
 
 /**
- * creo i tetramini come array globabili in modo da poterli prendere direttamente dentro alle funzioniv
+ * creo i tetramini come array globabili in modo da poterli prendere direttamente dentro alle funzioni
  */
 
 int i_size = n_tetramini;
@@ -47,8 +47,8 @@ tetramino_t rotate_tetramino(int rotation, tetramino_t tetramino){
 tetramino_t get_LastTetramino(char type){ /* ho scelto di partire dalla fine per svuotare l'array di ogni tipo di tetraminio (prendo ogni volta l'utlimo) così posso fare -- e così so che quando la size arriva a 0 ho finito quei tetramini a disposizione*/
     switch(type){
         case 'i':
-         i_type=realloc(i_type, --i_size);
-         return i_type[i_size];
+            i_type=realloc(i_type, --i_size);
+            return i_type[i_size];
 
         case 'j':
             j_type=realloc(j_type, --j_size);
@@ -71,7 +71,7 @@ tetramino_t get_LastTetramino(char type){ /* ho scelto di partire dalla fine per
             return i_type[z_size];
         default:
             printf("Rotto");
-        break;
+            break;
     }
 
 
@@ -89,13 +89,13 @@ void add_tetraminio(char type, int rotation) {
     }
     da_inserire = get_LastTetramino(type);
     da_inserire = rotate_tetramino(rotation, da_inserire);
-                                                            /* valutare se fare in modo dinamico con un for o con uno siwtch.
-                                                            *Se fatta con il for è necessario definire nella struct del tetramino un vettore "celle" dove
-                                                            * x è la cella vuota e # quella piena, così e possibile farsi ritornare il tetramino girato dalla rotate.
-                                                            *
-                                                            * Se si usa lo switch allora bisogna stare a fare caso per caso a mano, personalmente NON credo sia la miglior scelta per ruotare. Perchè nel momento del effettivo posizionamento sono necessari dei controlli
-                                                             * e per farli serve avere un effettivo "oggetto tetramino" che sia "concreto".
-                                                            */
+    /* valutare se fare in modo dinamico con un for o con uno siwtch.
+    *Se fatta con il for è necessario definire nella struct del tetramino un vettore "celle" dove
+    * x è la cella vuota e # quella piena, così e possibile farsi ritornare il tetramino girato dalla rotate.
+    *
+    * Se si usa lo switch allora bisogna stare a fare caso per caso a mano, personalmente NON credo sia la miglior scelta per ruotare. Perchè nel momento del effettivo posizionamento sono necessari dei controlli
+     * e per farli serve avere un effettivo "oggetto tetramino" che sia "concreto".
+    */
 }
 
 
@@ -109,7 +109,7 @@ void add_tetraminio(char type, int rotation) {
  */
 
 
-void print_field( char matrix[HEIGHT][WEIGHT]){
+void print_field( int matrix[HEIGHT][WEIGHT]){
     int i,j;
 
     for(i = 0; i < WEIGHT; i++)
@@ -118,7 +118,12 @@ void print_field( char matrix[HEIGHT][WEIGHT]){
 
     for(i = 0; i < HEIGHT; ++i){
         for(j = 0; j < WEIGHT; j++){
-            printf("%c\t", matrix[i][j]);
+            switch(matrix[i][j]){
+                case 0:
+                    printf("x\t");
+                    break;
+            }
+
         }
         printf("\n\n");
     }
@@ -231,10 +236,10 @@ int main() {
     assign_values(t_type, t_size, 't',2,3);
     assign_values(z_type, z_size, 'z',2,3);
 
-    char field[HEIGHT][WEIGHT];
+    int field[HEIGHT][WEIGHT];
     for(i = 0; i < HEIGHT; ++i){
         for(j = 0; j < WEIGHT; j++){
-            field[i][j] = 'x';
+            field[i][j] = 0;
         }
     }
 
@@ -299,4 +304,3 @@ int main() {
     return 0;
 
 }
-
