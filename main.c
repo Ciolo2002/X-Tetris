@@ -1,4 +1,5 @@
 
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -142,13 +143,16 @@ void print_field( int matrix[HEIGHT][WEIGHT]){
  */
 tetramino_t* assign_values(tetramino_t *v, int size, char type, int height, int weight){
     /* FARE UN PICCOLO CONTROLLO PERCHè CREDO CHE NON VADA AD INZIALIZZARE TUTTI E 20 I PEZZI DELL'ARRAY
-     * MA CICLI 20, ANDANDO A MODIFICARE SEMPRE E SOLO LA PRIMA CELLA DELL'ARRAY. */
+     * MA CICLI 20, ANDANDO A MODIFICARE SEMPRE E SOLO LA PRIMA CELLA DELL'ARRAY.
+     *
+     * edit: MODIFICATO DA BIG_PANI
+     * */
     int i;
     for(i = 0; i< size; i++){
-        v->type = type;
-        v->rotation = 0;
-        v->height=height;
-        v->weight=weight;
+        v[i].type = type;
+        v[i].rotation = 0;
+        v[i].height = height;
+        v[i].weight = weight;
     }
     return v;
 }
@@ -159,7 +163,7 @@ void print_array(tetramino_t *v, int size){
     printf("\n\n");
     int i;
     for(i = 0; i < size; i++){
-        printf("%c %d %d\n", v->type, v->rotation, i);
+        printf("%c %d %d\n", v[i].type, v[i].rotation, i);
     }
 }
 
@@ -270,8 +274,6 @@ int main() {
     printf("\nSeleziona una rotazione (inserisci un numero tra 1 e 4): ");
     scanf("%d", &rotation_selection);
     add_tetramino(type_selection,rotation_selection);
-
-
 
 
     /* }*/
