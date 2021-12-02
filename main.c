@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>  /* SE SI USA CLION INSERIRE NEL FILE CMakeList.txt --> target_link_libraries(X_Tetris_first PRIVATE m)  */
 
 #define WIDTH 10
 #define HEIGHT 15
@@ -13,7 +14,7 @@ int I[4][4] = {
         {1, 0, 0, 0},
         {1, 0, 0, 0},
         {1, 0, 0, 0}
-        };
+};
 
 int J[4][4] = {
         {0, 0, 0, 0},
@@ -83,6 +84,8 @@ tetramino_t *s_type;
 tetramino_t *t_type;
 tetramino_t *z_type;
 
+
+tetramino_t rotateTetramino(tetramino_t tetramino1);
 
 /**
  * stampa l'effettivo tetramino, si può usare anche solo per fare i test e poi per giocare usariamo l'altra print che è più carina.
@@ -200,7 +203,13 @@ void add_tetramino(char type, int rotation) {
     }
     da_inserire = get_LastTetramino(type);
 
+
+    da_inserire.rotation = rotation;
+    da_inserire = rotateTetramino(da_inserire);
+
     print_realTetramino(da_inserire);
+    /*TODO fare la funzione che sposta il tetramino il più in basso a sx possibile */
+
     printf("ciao");
     exit(0);
     /* da_inserire = rotate_tetramino(rotation, da_inserire); */
@@ -215,6 +224,29 @@ void add_tetramino(char type, int rotation) {
     * Se si usa lo switch allora bisogna stare a fare caso per caso a mano, personalmente NON credo sia la miglior scelta per ruotare. Perchè nel momento del effettivo posizionamento sono necessari dei controlli
      * e per farli serve avere un effettivo "oggetto tetramino" che sia "concreto".
     */
+}
+
+tetramino_t rotateTetramino(tetramino_t tetramino1) {
+    tetramino_t temp = tetramino1;
+    int i, j, new_x, new_y;
+    float rotation_degrees = (float)((tetramino1.rotation-1 ) * 90);
+
+    if (tetramino1.type == 'o' || (tetramino1.rotation==1)) {
+        return tetramino1;
+    }
+    for (i = 0; i < TETRAMINO_LATO-1; i++) {
+        for (j = 0; j < TETRAMINO_LATO-1; j++) { /*TODO debuggare */
+            new_x=abs((int) ((float)i * cosf(rotation_degrees) - (float)j * sinf(rotation_degrees)));
+            new_y=abs((int) ((float)i * sinf(rotation_degrees) + (float)j * cosf(rotation_degrees)));
+            printf("Colonna %d: \n",new_x);
+            printf("Riga %d: \n",new_y);
+            tetramino1.pieces[i][j] = temp.pieces[new_x][new_y];
+        }
+    }
+
+    return tetramino1;
+
+
 }
 
 
@@ -253,7 +285,8 @@ void print_field(int matrix[HEIGHT][WIDTH]) {
  * @param type
  * @return
  */
-tetramino_t *assign_values(tetramino_t *v, int size, char type,/* int height, int width, */ int *pieces) {
+tetramino_t *assign_values(tetramino_t *v, int size, char type,/* int height, int width, */
+                           int pieces[TETRAMINO_LATO][TETRAMINO_LATO]) {
     /* FARE UN PICCOLO CONTROLLO PERCHè CREDO CHE NON VADA AD INZIALIZZARE TUTTI E 20 I PEZZI DELL'ARRAY
      * MA CICLI 20, ANDANDO A MODIFICARE SEMPRE E SOLO LA PRIMA CELLA DELL'ARRAY.
      *
@@ -267,9 +300,15 @@ tetramino_t *assign_values(tetramino_t *v, int size, char type,/* int height, in
         /*   v[i].height = height;
            v[i].width = width; */
         /* v[i].pieces = (int *) malloc(sizeof(int) * height * width); */
+
+
+
+
+
         for (colonne = 0; colonne < TETRAMINO_LATO; colonne++) {
             for (righe = 0; righe < TETRAMINO_LATO; righe++) {
-                v[i].pieces[colonne][righe] = pieces[cnt++]; /* si rompe qua, bisogna capire perchè non assegna bene i valori*/
+                v[i].pieces[colonne][righe] = (int) pieces[colonne][righe]; /* si rompe qua, bisogna capire perchè non assegna bene i valori
+                                                                               edit_ fixato passando la matrice tramite la sua dimensione dal buon sarto*/
             }
         }
     }
@@ -358,13 +397,13 @@ int main() {
     z_type = malloc(n_tetramini * sizeof(*z_type));
 
 
-    assign_values(i_type, i_size, 'i', /*4, 4,*/ I);
-    assign_values(j_type, j_size, 'j',  /*4, 4,*/ J);
-    assign_values(l_type, l_size, 'l',  /*4, 4,*/ L);
-    assign_values(o_type, o_size, 'o',  /*4, 4,*/ O);
-    assign_values(s_type, s_size, 's',  /*4, 4,*/ S);
-    assign_values(t_type, t_size, 't',  /*4, 4,*/ T);
-    assign_values(z_type, z_size, 'z',  /*4, 4,*/ Z);
+    assign_values(i_type, i_size, 'i', /*4, 4,*/    I);
+    assign_values(j_type, j_size, 'j',  /*4, 4,*/  J);
+    assign_values(l_type, l_size, 'l',  /*4, 4,*/  L);
+    assign_values(o_type, o_size, 'o',  /*4, 4,*/   O);
+    assign_values(s_type, s_size, 's',  /*4, 4,*/   S);
+    assign_values(t_type, t_size, 't',  /*4, 4,*/   T);
+    assign_values(z_type, z_size, 'z',  /*4, 4,*/   Z);
 
 
     /* print_realTetramino(z_type[4]); */
