@@ -191,15 +191,15 @@ tetramino_t get_LastTetramino(char type) { /* ho scelto di partire dalla fine pe
 }
 
 
-void add_tetramino(char type, int rotation) {
+tetramino_t add_tetramino(char type, int rotation) {
     tetramino_t da_inserire;
     if (type != 'i' && type != 'z' && type != 't' && type != 's' && type != 'l' && type != 'o' && type != 'j') {
         printf("\nSelezione non valida\n");
-        return;
+        exit(0);
     }
     if (rotation < 1 || rotation > 4) {
         printf("\nRotazione non valida\n");
-        return;
+        exit(0);
     }
     da_inserire = get_LastTetramino(type);
 
@@ -207,13 +207,10 @@ void add_tetramino(char type, int rotation) {
     da_inserire.rotation = rotation;
     da_inserire = rotateTetramino(da_inserire);
 
-    print_realTetramino(da_inserire);
-    /*TODO fare la funzione che sposta il tetramino il più in basso a sx possibile */
+    return da_inserire;
 
-    printf("ciao");
-    exit(0);
+
     /* da_inserire = rotate_tetramino(rotation, da_inserire); */
-    print_realTetramino(da_inserire);
 
 
 
@@ -434,8 +431,10 @@ int main() {
     scanf("%c", &type_selection);
     printf("\nSeleziona una rotazione (inserisci un numero tra 1 e 4): ");
     scanf("%d", &rotation_selection);
-    add_tetramino(type_selection, rotation_selection);
+    tetramino_t inserito = add_tetramino(type_selection, rotation_selection);
 
+    print_realTetramino(inserito);
+    /*TODO fare la funzione che sposta il tetramino il più in basso a sx possibile */
 
     /* }*/
 
