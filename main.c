@@ -224,20 +224,42 @@ tetramino_t add_tetramino(char type, int rotation) {
 }
 
 tetramino_t rotateTetramino(tetramino_t tetramino1) {
-    tetramino_t temp = tetramino1;
+    /*tetramino_t temp = tetramino1;*/
+    int temp[TETRAMINO_LATO][TETRAMINO_LATO];
     int i, j, new_x, new_y;
     float rotation_degrees = (float)((tetramino1.rotation-1 ) * 90);
+    int rotation = tetramino1.rotation;
 
     if (tetramino1.type == 'o' || (tetramino1.rotation==1)) {
         return tetramino1;
     }
-    for (i = 0; i < TETRAMINO_LATO-1; i++) {
-        for (j = 0; j < TETRAMINO_LATO-1; j++) { /*TODO debuggare */
-            new_x=abs((int) ((float)i * cosf(rotation_degrees) - (float)j * sinf(rotation_degrees)));
-            new_y=abs((int) ((float)i * sinf(rotation_degrees) + (float)j * cosf(rotation_degrees)));
-            printf("Colonna %d: \n",new_x);
-            printf("Riga %d: \n",new_y);
-            tetramino1.pieces[i][j] = temp.pieces[new_x][new_y];
+
+
+    /* se il tetramino è di tipo I, S o Z la rotazione 3 ritorna il tetramino di partenza */
+    if ((tetramino1.type == 'i' || tetramino1.type == 's' || tetramino1.type == 'z') && tetramino1.rotation == 3){
+        return tetramino1;
+    }
+
+    while(rotation > 1) {
+
+        for (i = 0; i < TETRAMINO_LATO; i++) {
+            for (j = 0; j < TETRAMINO_LATO; j++) { /*TODO debuggare */
+                /*
+                new_x=abs((int) ((float)i * cosf(rotation_degrees) - (float)j * sinf(rotation_degrees)));
+                new_y=abs((int) ((float)i * sinf(rotation_degrees) + (float)j * cosf(rotation_degrees)));
+                printf("Colonna %d: \n",new_x);
+                printf("Riga %d: \n",new_y);
+                tetramino1.pieces[i][j] = temp.pieces[new_x][new_y];*/
+                temp[i][j] = tetramino1.pieces[TETRAMINO_LATO - j - 1][i];
+            }
+        }
+
+        rotation--;
+    }
+
+    for(i = 0; i < TETRAMINO_LATO; i++){
+        for(j = 0; j < TETRAMINO_LATO; j++){
+            tetramino1.pieces[i][j] = temp[i][j];
         }
     }
 
