@@ -85,7 +85,96 @@ tetramino_t *t_type;
 tetramino_t *z_type;
 
 
-tetramino_t rotateTetramino(tetramino_t tetramino1);
+tetramino_t pullTetraminoLeft(tetramino_t tetramino) { /* TODO debuggare: non mi mantiene la forma originale del tetramino */
+    int index = 0, i, row, temp;
+    for(row = 0; row < TETRAMINO_LATO;row++){
+        index = 0;
+        for (i = 0; i < TETRAMINO_LATO; i++) {
+            if (tetramino.pieces[row][i] == 0) {
+                continue;
+            }
+
+            temp =tetramino.pieces[row][i];
+            tetramino.pieces[row][i] = tetramino.pieces[row][index];
+            tetramino.pieces[row][index]= temp;
+            index++;
+        }
+    }
+
+
+    return tetramino;
+}
+
+
+/**
+ * Ritorna 1 se tutta l'ultima riga del tetramino è composta di soli 0
+ * @param tetramino
+ * @return
+ */
+int checkEmptyLastRow(tetramino_t tetramino) {
+    int bool = 1, cnt;
+    for (cnt = 0; cnt < TETRAMINO_LATO; cnt++) {
+        if (tetramino.pieces[TETRAMINO_LATO - 1][cnt] != 0) {
+            bool = 0;
+        }
+    }
+    return bool;
+
+}
+
+/**
+ * Porta i valori del tetramino giù di 1 riga nella matrice che lo contiene
+ * @param tetramino
+ * @return
+ */
+tetramino_t pushTetraminoDown(tetramino_t tetramino) {
+    int swapCount = 1;
+    int col = 0, row = 0, j = 0, check = 0;
+    int temp[TETRAMINO_LATO];
+    for (col = TETRAMINO_LATO - 1; col > 0; col--) {
+        for (row = 0; row < TETRAMINO_LATO; row++) {
+            temp[row] = tetramino.pieces[col][row];
+            tetramino.pieces[col][row] = tetramino.pieces[col - 1][row];
+            tetramino.pieces[col - 1][row] = temp[row];
+        }
+    }
+
+
+    return tetramino;
+}
+
+tetramino_t rotateTetramino(tetramino_t tetramino1) {
+    /*tetramino_t temp = tetramino1;*/
+    tetramino_t temp = tetramino1;
+    /*int temp[TETRAMINO_LATO][TETRAMINO_LATO];*/
+    int i, j, new_x, new_y;
+    float rotation_degrees = (float) ((tetramino1.rotation - 1) * 90);
+    int rotation = tetramino1.rotation;
+    if (tetramino1.type == 'o' || (tetramino1.rotation == 1)) {
+        return tetramino1;
+    }
+    /* se il tetramino è di tipo I, S o Z la rotazione 3 ritorna il tetramino di partenza */
+    if ((tetramino1.type == 'i' || tetramino1.type == 's' || tetramino1.type == 'z') && tetramino1.rotation == 3) {
+        return tetramino1;
+    }
+    while (rotation > 1) {
+        for (i = 0; i < TETRAMINO_LATO; i++) {
+            for (j = 0; j <
+                        TETRAMINO_LATO; j++) { /*TODO debuggare, edit: debuggato e tolto un cicli per migliore le prestazioni */
+                /*
+                new_x=abs((int) ((float)i * cosf(rotation_degrees) - (float)j * sinf(rotation_degrees)));
+                new_y=abs((int) ((float)i * sinf(rotation_degrees) + (float)j * cosf(rotation_degrees)));
+                printf("Colonna %d: \n",new_x);
+                printf("Riga %d: \n",new_y);
+                tetramino1.pieces[i][j] = temp.pieces[new_x][new_y];*/
+                temp.pieces[i][j] = tetramino1.pieces[TETRAMINO_LATO - j - 1][i];
+            }
+        }
+        rotation--;
+        tetramino1 = temp;
+    }
+    return tetramino1;
+}
 
 /**
  * stampa l'effettivo tetramino, si può usare anche solo per fare i test e poi per giocare usariamo l'altra print che è più carina.
@@ -102,56 +191,6 @@ void print_realTetramino(tetramino_t tetramino) {
 }
 
 
-
-/**
- *
- * @param rotation
- * @param row
- * @param col
- * @param height
- * @param width
- * @return
- */
-
-/*COPIATA DA VIO, SE RIESCI A TROVARE UN MODO PER FARLA DIVERSA MAGARI CON DEI FOR O CON DELLE FORMULE MATIMATICHE FIKE SAREBBE BELLO*/
-int cella_rotazione(int rotation, int row, int col, int height, int width) {
-    switch (rotation) {
-        case 0:
-            return row * width + col;
-            break;
-        case 1:
-            return (height - col - 1) * width + row;
-            break;
-        case 2:
-            return (height - row - 1) * width + (width - col - 1);
-            break;
-        case 3:
-            return col * width + (width - row - 1);
-            break;
-    }
-}
-
-/*tetramino_t rotate_tetramino(int rotation, tetramino_t tetramino) {
-
-    int aux = 0, i, j;
-    tetramino_t temp = tetramino;
-    tetramino.rotation = rotation;
-    tetramino.pieces = malloc(sizeof(int) * tetramino.height * tetramino.width);
-    if (rotation == 2 || rotation == 4) {
-        aux = tetramino.height;
-        tetramino.height = tetramino.width;
-        tetramino.width = aux;
-    }
-    temp = tetramino;
-    for (i = 0; i < tetramino.height; i++) {
-        for (j = 0; j < tetramino.width; j++) {
-            aux = cella_rotazione(tetramino.rotation, i, j, tetramino.height, tetramino.width);
-            temp.pieces[i * tetramino.width + j] = tetramino.pieces[aux];
-        }
-    }
-    return temp;
-
-}*/
 /**
  * funzione che ritorna l'ultimo tetramino disponibile
  * @param type
@@ -187,7 +226,6 @@ tetramino_t get_LastTetramino(char type) { /* ho scelto di partire dalla fine pe
             break;
     }
 
-
 }
 
 
@@ -207,6 +245,20 @@ tetramino_t add_tetramino(char type, int rotation) {
     da_inserire.rotation = rotation;
     da_inserire = rotateTetramino(da_inserire);
 
+    print_realTetramino(da_inserire);
+    printf("\n");
+
+    while (checkEmptyLastRow(
+            da_inserire)) { /*finchè l'ultima la più in basso della matrice è fatta di soli 0 porto il tetramino in basso*/
+        da_inserire = pushTetraminoDown(da_inserire);
+    }
+
+    print_realTetramino(da_inserire);
+    printf("\n");
+
+    da_inserire= pullTetraminoLeft(da_inserire);
+
+
     return da_inserire;
 
 
@@ -221,51 +273,6 @@ tetramino_t add_tetramino(char type, int rotation) {
     * Se si usa lo switch allora bisogna stare a fare caso per caso a mano, personalmente NON credo sia la miglior scelta per ruotare. Perchè nel momento del effettivo posizionamento sono necessari dei controlli
      * e per farli serve avere un effettivo "oggetto tetramino" che sia "concreto".
     */
-}
-
-tetramino_t rotateTetramino(tetramino_t tetramino1) {
-    /*tetramino_t temp = tetramino1;*/
-    int temp[TETRAMINO_LATO][TETRAMINO_LATO];
-    int i, j, new_x, new_y;
-    float rotation_degrees = (float)((tetramino1.rotation-1 ) * 90);
-    int rotation = tetramino1.rotation;
-
-    if (tetramino1.type == 'o' || (tetramino1.rotation==1)) {
-        return tetramino1;
-    }
-
-
-    /* se il tetramino è di tipo I, S o Z la rotazione 3 ritorna il tetramino di partenza */
-    if ((tetramino1.type == 'i' || tetramino1.type == 's' || tetramino1.type == 'z') && tetramino1.rotation == 3){
-        return tetramino1;
-    }
-
-    while(rotation > 1) {
-
-        for (i = 0; i < TETRAMINO_LATO; i++) {
-            for (j = 0; j < TETRAMINO_LATO; j++) { /*TODO debuggare */
-                /*
-                new_x=abs((int) ((float)i * cosf(rotation_degrees) - (float)j * sinf(rotation_degrees)));
-                new_y=abs((int) ((float)i * sinf(rotation_degrees) + (float)j * cosf(rotation_degrees)));
-                printf("Colonna %d: \n",new_x);
-                printf("Riga %d: \n",new_y);
-                tetramino1.pieces[i][j] = temp.pieces[new_x][new_y];*/
-                temp[i][j] = tetramino1.pieces[TETRAMINO_LATO - j - 1][i];
-            }
-        }
-
-        rotation--;
-    }
-
-    for(i = 0; i < TETRAMINO_LATO; i++){
-        for(j = 0; j < TETRAMINO_LATO; j++){
-            tetramino1.pieces[i][j] = temp[i][j];
-        }
-    }
-
-    return tetramino1;
-
-
 }
 
 
@@ -319,11 +326,6 @@ tetramino_t *assign_values(tetramino_t *v, int size, char type,/* int height, in
         /*   v[i].height = height;
            v[i].width = width; */
         /* v[i].pieces = (int *) malloc(sizeof(int) * height * width); */
-
-
-
-
-
         for (colonne = 0; colonne < TETRAMINO_LATO; colonne++) {
             for (righe = 0; righe < TETRAMINO_LATO; righe++) {
                 v[i].pieces[colonne][righe] = (int) pieces[colonne][righe]; /* si rompe qua, bisogna capire perchè non assegna bene i valori
