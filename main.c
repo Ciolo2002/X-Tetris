@@ -431,6 +431,7 @@ int main() {
 
 
     /* while(win == 0 && lose == 0){*/
+printf("Ciao\n");
     printf("TETRAMINI A DISPOSIZIONE: \n");
 
     print_tetramini('i', i_size);
