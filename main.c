@@ -562,7 +562,7 @@ printf("Ciao\n");
 
 
 
-    /* SELEZIONE TETRAMINO  */
+    /* SELEZIONE TETRAMINO    */
 
 
 
