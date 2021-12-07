@@ -574,7 +574,7 @@ printf("Ciao\n");
     scanf("%d", &rotation_selection);
     tetramino_t inserito = add_tetramino(type_selection, rotation_selection);
 
-    print_realTetramino(inserito);
+    print_realTetramino(inserito) ;
     /*TODO fare la funzione che sposta il tetramino il più in basso a sx possibile */
 
     /* }*/
