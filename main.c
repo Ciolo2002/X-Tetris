@@ -343,6 +343,7 @@ tetramino_t add_tetramino(char type, int rotation) {
                 }
             }
 
+
             --z_size;
             break;
         default:
