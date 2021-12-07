@@ -9,6 +9,15 @@
 #define TETRAMINO_LATO 4
 #define n_tetramini 20
 
+
+int i_size = n_tetramini;
+int j_size = n_tetramini;
+int l_size = n_tetramini;
+int o_size = n_tetramini;
+int s_size = n_tetramini;
+int t_size = n_tetramini;
+int z_size = n_tetramini;
+
 int I[4][4] = {
         {1, 0, 0, 0},
         {1, 0, 0, 0},
@@ -69,13 +78,7 @@ typedef struct tetramino {
  * creo i tetramini come array globabili in modo da poterli prendere direttamente dentro alle funzioni
  */
 
-int i_size = n_tetramini;
-int j_size = n_tetramini;
-int l_size = n_tetramini;
-int o_size = n_tetramini;
-int s_size = n_tetramini;
-int t_size = n_tetramini;
-int z_size = n_tetramini;
+/*
 tetramino_t *i_type;
 tetramino_t *j_type;
 tetramino_t *l_type;
@@ -83,7 +86,7 @@ tetramino_t *o_type;
 tetramino_t *s_type;
 tetramino_t *t_type;
 tetramino_t *z_type;
-
+*/
 
 tetramino_t pullTetraminoLeft(tetramino_t tetramino) { /* TODO debuggare: non mi mantiene la forma originale del tetramino */
     int index = 0, i, row, temp;
@@ -197,12 +200,13 @@ void print_realTetramino(tetramino_t tetramino) {
  * @return
  */
 //TODO: fare il controllo di non aver esuarito i pezzi per array di tetramino
-tetramino_t get_LastTetramino(char type) { /* ho scelto di partire dalla fine per svuotare l'array di ogni tipo di tetraminio (prendo ogni volta l'utlimo) così posso fare -- e così so che quando la size arriva a
+/*tetramino_t get_LastTetramino(char type) { /* ho scelto di partire dalla fine per svuotare l'array di ogni tipo di tetraminio (prendo ogni volta l'utlimo) così posso fare -- e così so che quando la size arriva a
  * 0 ho finito quei tetramini a disposizione*/
-    switch (type) {
+    /* switch (type) {
         case 'i':
-            i_type = realloc(i_type, --i_size);
-            return i_type[i_size];
+            --i_size;
+            i_type = realloc(i_type, i_size * sizeof(tetramino_t));
+            return i_type[0];
         case 'j':
             j_type = realloc(j_type, --j_size);
             return j_type[j_size];
@@ -227,10 +231,11 @@ tetramino_t get_LastTetramino(char type) { /* ho scelto di partire dalla fine pe
     }
 
 }
-
+*/
 
 tetramino_t add_tetramino(char type, int rotation) {
     tetramino_t da_inserire;
+    int isOkay = 1, i, j;
     if (type != 'i' && type != 'z' && type != 't' && type != 's' && type != 'l' && type != 'o' && type != 'j') {
         printf("\nSelezione non valida\n");
         exit(0);
@@ -239,9 +244,117 @@ tetramino_t add_tetramino(char type, int rotation) {
         printf("\nRotazione non valida\n");
         exit(0);
     }
-    da_inserire = get_LastTetramino(type);
+    /*da_inserire = get_LastTetramino(type)  ;*/
 
+    switch (type) {
+        case 'i':
+            if(i_size == 0){
+                printf("\nI tetramini a disposizione di tipo %c sono finiti\n", type);
+                isOkay = 0;
+                break;
+            }
+            for(i = 0; i < TETRAMINO_LATO; i++){
+                for(j = 0; j < TETRAMINO_LATO; j++){
+                    da_inserire.pieces[i][j] = I[i][j];
+                }
+            }
+            --i_size;
 
+            break;
+        case 'j':
+            if(j_size == 0){
+                printf("\nI tetramini a disposizione di tipo %c sono finiti\n", type);
+                isOkay = 0;
+                break;
+            }
+            for(i = 0; i < TETRAMINO_LATO; i++){
+                for(j = 0; j < TETRAMINO_LATO; j++){
+                    da_inserire.pieces[i][j] = J[i][j];
+                }
+            }
+
+            --j_size;
+            break;
+        case 'l':
+            if(l_size == 0){
+                printf("\nI tetramini a disposizione di tipo %c sono finiti\n", type);
+                isOkay = 0;
+                break;
+            }
+            for(i = 0; i < TETRAMINO_LATO; i++){
+                for(j = 0; j < TETRAMINO_LATO; j++){
+                    da_inserire.pieces[i][j] = L[i][j];
+                }
+            }
+
+            --l_size;
+            break;
+        case 'o':
+            if(o_size == 0){
+                printf("\nI tetramini a disposizione di tipo %c sono finiti\n", type);
+                isOkay = 0;
+                break;
+            }
+            for(i = 0; i < TETRAMINO_LATO; i++){
+                for(j = 0; j < TETRAMINO_LATO; j++){
+                    da_inserire.pieces[i][j] = O[i][j];
+                }
+            }
+
+            --o_size;
+            break;
+        case 's':
+            if(s_size == 0){
+                printf("\nI tetramini a disposizione di tipo %c sono finiti\n", type);
+                isOkay = 0;
+                break;
+            }
+            for(i = 0; i < TETRAMINO_LATO; i++){
+                for(j = 0; j < TETRAMINO_LATO; j++){
+                    da_inserire.pieces[i][j] = S[i][j];
+                }
+            }
+
+            --s_size;
+            break;
+        case 't':
+            if(t_size == 0){
+                printf("\nI tetramini a disposizione di tipo %c sono finiti\n", type);
+                isOkay = 0;
+                break;
+            }
+            for(i = 0; i < TETRAMINO_LATO; i++){
+                for(j = 0; j < TETRAMINO_LATO; j++){
+                    da_inserire.pieces[i][j] = T[i][j];
+                }
+            }
+
+            --t_size;
+            break;
+        case 'z':
+            if(z_size == 0){
+                printf("\nI tetramini a disposizione di tipo %c sono finiti\n", type);
+                isOkay = 0;
+                break;
+            }
+            for(i = 0; i < TETRAMINO_LATO; i++){
+                for(j = 0; j < TETRAMINO_LATO; j++){
+                    da_inserire.pieces[i][j] = Z[i][j];
+                }
+            }
+
+            --z_size;
+            break;
+        default:
+            printf("Rotto");
+            break;
+    }
+
+    if(isOkay == 0){
+        exit(0);
+    }
+
+    da_inserire.type = type;
     da_inserire.rotation = rotation;
     da_inserire = rotateTetramino(da_inserire);
 
@@ -311,6 +424,8 @@ void print_field(int matrix[HEIGHT][WIDTH]) {
  * @param type
  * @return
  */
+
+
 tetramino_t *assign_values(tetramino_t *v, int size, char type,/* int height, int width, */
                            int pieces[TETRAMINO_LATO][TETRAMINO_LATO]) {
     /* FARE UN PICCOLO CONTROLLO PERCHè CREDO CHE NON VADA AD INZIALIZZARE TUTTI E 20 I PEZZI DELL'ARRAY
@@ -408,7 +523,7 @@ int main() {
 
 
 
-
+/*
     i_type = malloc(n_tetramini * sizeof(*i_type));
     j_type = malloc(n_tetramini * sizeof(*j_type));
     l_type = malloc(n_tetramini * sizeof(*l_type));
@@ -417,14 +532,15 @@ int main() {
     t_type = malloc(n_tetramini * sizeof(*t_type));
     z_type = malloc(n_tetramini * sizeof(*z_type));
 
-
-    assign_values(i_type, i_size, 'i', /*4, 4,*/    I);
-    assign_values(j_type, j_size, 'j',  /*4, 4,*/  J);
-    assign_values(l_type, l_size, 'l',  /*4, 4,*/  L);
-    assign_values(o_type, o_size, 'o',  /*4, 4,*/   O);
-    assign_values(s_type, s_size, 's',  /*4, 4,*/   S);
-    assign_values(t_type, t_size, 't',  /*4, 4,*/   T);
-    assign_values(z_type, z_size, 'z',  /*4, 4,*/   Z);
+*/
+/*
+    assign_values(i_type, i_size, 'i',     I);
+    assign_values(j_type, j_size, 'j',   J);
+    assign_values(l_type, l_size, 'l',   L);
+    assign_values(o_type, o_size, 'o',   O);
+    assign_values(s_type, s_size, 's',   S);
+    assign_values(t_type, t_size, 't',   T);
+    assign_values(z_type, z_size, 'z',   Z);
 
 
     /* print_realTetramino(z_type[4]); */
