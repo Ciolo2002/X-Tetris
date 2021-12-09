@@ -73,21 +73,38 @@ typedef struct tetramino {
     int pieces[TETRAMINO_LATO][TETRAMINO_LATO];
 } tetramino_t;
 
+
+/**
+ * Va a tutti gli effetti a piazzare il tetramino nel campo da gioco 
+ * @param pField 
+ * @param pTetramino 
+ * @param colonna 
+ * @param riga 
+ */
 void place_tetrimino(int pField[HEIGHT][WIDTH], tetramino_t *pTetramino, int colonna, int riga) {
-    int i, j;
+    int i, j, bool_placed=0;
     for (i = 0; i < TETRAMINO_LATO; i++) {
-        riga--;
         for (j = 0; j < TETRAMINO_LATO; j++) {
-            if(pTetramino->pieces[i * TETRAMINO_LATO][j]!=0){
-                pField[riga * WIDTH][ j + colonna] = pTetramino->pieces[i * TETRAMINO_LATO][j];
+            if(pTetramino->pieces[i][j]!=0){
+                printf(" filed %d  tetramino %d \n",pField[riga][j+colonna],pTetramino->pieces[i][j]);
+                pField[riga][j+colonna] = pTetramino->pieces[i][j];
+                bool_placed=1;
             }
         }
+        if(bool_placed){
+            riga--;
+        }
+        bool_placed=0;
     }
     printf("\n");
 }
 
 
-
+/**
+ * ritorna maggiore lunghezza del tetramino che riceve in base alla sua rotazione attuale
+ * @param pTetramino 
+ * @return 
+ */
 int maxTetraminoWidth(tetramino_t *pTetramino) {
     int lunghezza_max_tetramino = 0,temp=0, i, j ;
     for(i=0;i<TETRAMINO_LATO; i++){
@@ -105,7 +122,14 @@ int maxTetraminoWidth(tetramino_t *pTetramino) {
 }
 
 
-
+/**
+ * Controlla che la scelta del giocatore non porti fuori a destra o a sinistra il tetramino dal campo da gioco, poi
+ * controlla se un tetramino ci sta nel campo da gioco ed eventalmete in quale riga andarlo a piazzare,
+ * dopodichè una volta trovata la riga chiama place_tetramino e lo piazza oppure fa perdere il giocatore 
+ * @param da_inserire 
+ * @param field 
+ * @param col 
+ */
 void addTetramino(tetramino_t *da_inserire, int field[HEIGHT][WIDTH], int col) {
 
     int lunghezza_max_tetramino,i,j,z;
@@ -115,18 +139,19 @@ void addTetramino(tetramino_t *da_inserire, int field[HEIGHT][WIDTH], int col) {
         exit(0); /* TODO: non terminare il programma ma far ripetere la scelta */
     }
 
-    for (i = 0; i < HEIGHT; i++) {
-
-        for (j = 0; j < TETRAMINO_LATO; j++) {
-            for (z = 0; z < TETRAMINO_LATO; z++) {
-
-                if ((field[i * WIDTH][ z + j + col] != 0 && da_inserire->pieces[j][z]) != 0) {
+    for (i = HEIGHT-1; i >=0 ; i--) { /*riga campo da gioco*/
+        for (j = 0; j < TETRAMINO_LATO; j++) { /*riga tetramino*/
+            for (z = 0; z < TETRAMINO_LATO; z++) { /*colonna tetramino*/
+                if ((field[i+j][ z +col ] != 0) ) {  /*TODO EXTREMA DELICATESSA: QUESTO IF VA A CONTROLLARE
+                                                        * SE IL TETRAMINO CI STA NELLA BOARD QUINDI VA PERFEZIONATO
+                                                        * AL MEGLIO IN MODO CHE TUTTI I TETRAMII SI POSSANO INCASTRARE 
+                                                        * TRA DI LORO SENZA FARE BUG!!!!!!!1!!1!!1!11*/
                     if (i == 0) {
                         printf("Se arrivato in alto, hai perso!");
                         exit(1); /*killo tutto il programma perchè hai perso*/
                     }
-                    printf("%d ciao \n", i);
-                    place_tetrimino(*field, da_inserire, col, i);
+                    printf("%d ciao \n", i); /*todo cacellare una volta finiti i test */
+                    place_tetrimino(field, da_inserire, col, i);
                     return;
                 } else {
 
@@ -135,7 +160,7 @@ void addTetramino(tetramino_t *da_inserire, int field[HEIGHT][WIDTH], int col) {
         }
         /* fine del controllo */
     }
-    place_tetrimino(*field, da_inserire, col, i);
+    place_tetrimino(field, da_inserire, col, i);
     return;
 
 }
@@ -391,24 +416,28 @@ tetramino_t edit_tetramino(char type, int rotation) {
 void print_field(int matrix[HEIGHT][WIDTH]) {
     int i, j;
 
-    for (i = 0; i < WIDTH; i++)
+    printf("\t\t");
+    for (i = 0; i < WIDTH; i++) {
         printf("%d\t", i);
+    }
     printf("\n\n\n");
 
     for (i = 0; i < HEIGHT; ++i) {
+        printf("%d\t\t",i);
         for (j = 0; j < WIDTH; j++) {
             switch (matrix[i][j]) {
                 case 0:
                     printf("x\t");
                     break;
                 default:
-                     printf("[]\t");
-                break;
+                    printf("[]\t");
+                    break;
             }
         }
         printf("\n\n");
     }
     printf("\n");
+    printf("\t\t");
     for (i = 0; i < WIDTH; i++)
         printf("%d\t", i);
 
@@ -453,28 +482,19 @@ void print_tetramini(char type, int size) {
     }
 }
 
-//TODO: ruotare i tetramini
-//TODO: posizionare i tatrmini
-//TODO: decrementare il numero di tetramini a disposizione
+
 
 
 int main() {
     int i, j, win = 0, lose = 0, rotation_selection, colonna;
     tetramino_t da_inserire;
-    int field[HEIGHT][WIDTH];
+    int field[HEIGHT][WIDTH]={0};
     char type_selection;
 
-/* CAMPO DA GIOCO  */
 
-    for (i = 0; i < HEIGHT; ++i) {
-        for (j = 0; j < WIDTH; j++) {
-            field[i][j] = 0;
-        }
-    }
+     while(win == 0 && lose == 0){
 
-    /* while(win == 0 && lose == 0){*/
-    printf("Ciao\n");
-    printf("TETRAMINI A DISPOSIZIONE: \n");
+         printf("TETRAMINI A DISPOSIZIONE: \n");
 
     /* NUMERO DI TETRAMINI PER TIPO A DISPOSIZIONE */
 
@@ -497,7 +517,7 @@ int main() {
     print_field(field);
 
     printf("\n\n\nSeleziona un tetramino (inserisci un carattere tra i, j, l, o, s, t, z): ");
-    scanf("%c", &type_selection);
+    scanf("%c", &type_selection); /*TODO DEBUGGARE CON LA MASSIMA URGENZA!!!! SE SI UTILIZZA IL WHILE AL SECONDO GIRO QUA SI ROMPE!!!!!!!!!!!!!!!!!*/
     printf("\nSeleziona una rotazione (inserisci un numero tra 1 e 4): ");
     scanf("%d", &rotation_selection);
      printf("\nSeleziona la colonna dove posizionare il tetramino (inserisci un numero tra 0 e 9): ");
@@ -507,10 +527,10 @@ int main() {
     print_realTetramino(da_inserire);
 
     addTetramino(&da_inserire, field, colonna);
-    print_field(field);
 
 
-    /* }*/
+
+     }
 
 
     return 0;
