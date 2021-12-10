@@ -1,0 +1,1 @@
+/opt/homebrew/Cellar/gcc/11.2.0_3/bin/gcc-11 -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX12.0.sdk -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/X_Tetris_first.dir/main.c.o -o X_Tetris_first  -lm 
