@@ -1,5 +1,3 @@
-
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>  /* SE SI USA CLION INSERIRE NEL FILE CMakeList.txt --> target_link_libraries(X_Tetris_first PRIVATE m)  */
@@ -17,6 +15,7 @@ int o_size = n_tetramini;
 int s_size = n_tetramini;
 int t_size = n_tetramini;
 int z_size = n_tetramini;
+
 
 int I[4][4] = {
         {1, 0, 0, 0},
@@ -76,6 +75,99 @@ typedef struct tetramino {
 
 
 /**
+ * Va a tutti gli effetti a piazzare il tetramino nel campo da gioco 
+ * @param pField 
+ * @param pTetramino 
+ * @param colonna 
+ * @param riga 
+ */
+void place_tetrimino(int pField[HEIGHT][WIDTH], tetramino_t *pTetramino, int colonna, int riga) {
+    int i, j, bool_placed=0;
+    for (i = 0; i < TETRAMINO_LATO; i++) {
+        for (j = 0; j < TETRAMINO_LATO; j++) {
+            if(pTetramino->pieces[i][j]!=0){
+                printf(" filed %d  tetramino %d \n",pField[riga][j+colonna],pTetramino->pieces[i][j]);
+                pField[riga][j+colonna] = pTetramino->pieces[i][j];
+                bool_placed=1;
+            }
+        }
+        if(bool_placed){
+            riga--;
+        }
+        bool_placed=0;
+    }
+    printf("\n");
+}
+
+
+/**
+ * ritorna maggiore lunghezza del tetramino che riceve in base alla sua rotazione attuale
+ * @param pTetramino 
+ * @return 
+ */
+int maxTetraminoWidth(tetramino_t *pTetramino) {
+    int lunghezza_max_tetramino = 0,temp=0, i, j ;
+    for(i=0;i<TETRAMINO_LATO; i++){
+        temp=0;
+        for(j=0;j<TETRAMINO_LATO; j++){
+            if(pTetramino->pieces[i][j]!=0){
+                temp++;
+            }
+        }
+        if(temp>=lunghezza_max_tetramino){
+            lunghezza_max_tetramino=temp;
+        }
+    }
+    return lunghezza_max_tetramino;
+}
+
+
+/**
+ * Controlla che la scelta del giocatore non porti fuori a destra o a sinistra il tetramino dal campo da gioco, poi
+ * controlla se un tetramino ci sta nel campo da gioco ed eventalmete in quale riga andarlo a piazzare,
+ * dopodichè una volta trovata la riga chiama place_tetramino e lo piazza oppure fa perdere il giocatore 
+ * @param da_inserire 
+ * @param field 
+ * @param col 
+ */
+void addTetramino(tetramino_t *da_inserire, int field[HEIGHT][WIDTH], int col) {
+
+    int lunghezza_max_tetramino,i,j,z;
+    lunghezza_max_tetramino=maxTetraminoWidth(da_inserire);
+    if((col+lunghezza_max_tetramino)>=WIDTH || (col+lunghezza_max_tetramino)<=0 ){
+        printf("Non puoi posizione un tetramino fuori dal campo di gioco!!!");
+        exit(0); /* TODO: non terminare il programma ma far ripetere la scelta */
+    }
+
+    for (i = HEIGHT-1; i >=0 ; i--) { /*riga campo da gioco*/
+        for (j = 0; j < TETRAMINO_LATO; j++) { /*riga tetramino*/
+            for (z = 0; z < TETRAMINO_LATO; z++) { /*colonna tetramino*/
+                if ((field[i+j][ z +col ] != 0) ) {  /*TODO EXTREMA DELICATESSA: QUESTO IF VA A CONTROLLARE
+                                                        * SE IL TETRAMINO CI STA NELLA BOARD QUINDI VA PERFEZIONATO
+                                                        * AL MEGLIO IN MODO CHE TUTTI I TETRAMII SI POSSANO INCASTRARE 
+                                                        * TRA DI LORO SENZA FARE BUG!!!!!!!1!!1!!1!11*/
+                    if (i == 0) {
+                        printf("Se arrivato in alto, hai perso!");
+                        exit(1); /*killo tutto il programma perchè hai perso*/
+                    }
+                    printf("%d ciao \n", i); /*todo cacellare una volta finiti i test */
+                    place_tetrimino(field, da_inserire, col, i);
+                    return;
+                } else {
+
+                }
+            }
+        }
+        /* fine del controllo */
+    }
+    place_tetrimino(field, da_inserire, col, i);
+    return;
+
+}
+
+
+
+/**
  * Porta i valori del tetramino giù di 1 riga nella matrice che lo contiene
  * @param tetramino
  * @return
@@ -91,29 +183,30 @@ tetramino_t pushTetraminoDown(tetramino_t tetramino) {
             tetramino.pieces[col - 1][row] = temp[row];
         }
     }
-
-
     return tetramino;
 }
 
-
+/**
+ * Porta i valori del tetramino a sinistra di 1 riga nella matrice che lo contiene
+ * @param tetramino
+ * @return
+ */
 tetramino_t pushTetraminoLeft(tetramino_t tetramino) { /* TODO debuggare: non mi mantiene la forma originale del tetramino */
     int i, j;
-    int tmp[TETRAMINO_LATO][TETRAMINO_LATO];
+    int tmp[TETRAMINO_LATO][TETRAMINO_LATO]={0};
 
     for(i = 0; i < TETRAMINO_LATO ; i++){
         for(j = 0; j < TETRAMINO_LATO; j++){
-            tmp[i][j] = tetramino.pieces[i][j + 1];
+            if(j+1 < TETRAMINO_LATO){  /* nel caso ad esempio  J 3 senza questo if si buggava */
+                tmp[i][j] = tetramino.pieces[i][j +1];
+            }
         }
     }
-
     for(i = 0; i < TETRAMINO_LATO; i++){
         for(j = 0; j < TETRAMINO_LATO; j++){
             tetramino.pieces[i][j] = tmp[i][j];
         }
     }
-
-
     return tetramino;
 }
 
@@ -124,26 +217,27 @@ tetramino_t pushTetraminoLeft(tetramino_t tetramino) { /* TODO debuggare: non mi
  * @return
  */
 int checkEmptyLastRow(tetramino_t tetramino) {
-    int bool = 1, cnt;
+    int  cnt;
     for (cnt = 0; cnt < TETRAMINO_LATO; cnt++) {
-        if (tetramino.pieces[TETRAMINO_LATO - 1][cnt] != 0)
-            bool = 0;
-
+        if (tetramino.pieces[TETRAMINO_LATO - 1][cnt] != 0){
+            return 0;
+        }
     }
-    return bool;
-
+    return 1;
 }
 
-
+/**
+ * Ritorna 1 se la prima colonna del tetramino è composta di soli 0
+ * @param tetramino
+ * @return
+ */
 int checkEmptyLeftColumn(tetramino_t tetramino) {
-    int bool = 1, cnt;
+    int  cnt;
     for (cnt = 0; cnt < TETRAMINO_LATO; cnt++) {
         if (tetramino.pieces[cnt][0] != 0)
-            bool = 0;
-
+           return 0;
     }
-    return bool;
-
+    return 1;
 }
 
 tetramino_t rotateTetramino(tetramino_t tetramino1) {
@@ -184,13 +278,102 @@ void print_realTetramino(tetramino_t tetramino) {
         printf("\n");
     }
 }
-/*
+
+/**
+ * Copia un tetramino sorgente in un effettivo tetramino utilizzato nel gioco
+ * @param copy
+ * @param source
+ */
+void copyTetramino(tetramino_t *copy, int source[TETRAMINO_LATO][TETRAMINO_LATO]){
+    int i,j;
+    for(i = 0; i < TETRAMINO_LATO; i++){
+        for(j = 0; j < TETRAMINO_LATO; j++){
+            copy->pieces[i][j] = source[i][j];
+        }
+    }
+}
+
+int getLastTetramino(tetramino_t *da_inserire, char type){
+    int isOkay = 1;
+    switch (type) {
+        case 'i':
+            if(i_size <= 0){
+                printf("\nI tetramini a disposizione di tipo %c sono finiti\n", type);
+                isOkay = 0;
+                break;
+            }
+            copyTetramino(da_inserire,  I);
+            --i_size;
+            break;
+        case 'j':
+            if(j_size <= 0){
+                printf("\nI tetramini a disposizione di tipo %c sono finiti\n", type);
+                isOkay = 0;
+                break;
+            }
+            copyTetramino(da_inserire,  J);
+            --j_size;
+            break;
+        case 'l':
+            if(l_size <= 0){
+                printf("\nI tetramini a disposizione di tipo %c sono finiti\n", type);
+                isOkay = 0;
+                break;
+            }
+            copyTetramino(da_inserire,  L);
+            --l_size;
+            break;
+        case 'o':
+            if(o_size <= 0){
+                printf("\nI tetramini a disposizione di tipo %c sono finiti\n", type);
+                isOkay = 0;
+                break;
+            }
+            copyTetramino(da_inserire,  O);
+            --o_size;
+            break;
+        case 's':
+            if(s_size <= 0){
+                printf("\nI tetramini a disposizione di tipo %c sono finiti\n", type);
+                isOkay = 0;
+                break;
+            }
+            copyTetramino(da_inserire,  S);
+            --s_size;
+            break;
+        case 't':
+            if(t_size <= 0){
+                printf("\nI tetramini a disposizione di tipo %c sono finiti\n", type);
+                isOkay = 0;
+                break;
+            }
+            copyTetramino(da_inserire,  T);
+            --t_size;
+            break;
+        case 'z':
+            if(z_size <= 0){
+                printf("\nI tetramini a disposizione di tipo %c sono finiti\n", type);
+                isOkay = 0;
+                break;
+            }
+            copyTetramino(da_inserire,  Z);
+            --z_size;
+            break;
+        default:
+            printf("Rotto");
+            break;
+    }
+    return isOkay;
+}
+
+
+/**
  * Funzione che crea effettivamente il tetramino e decrementa la quantità di tetramini a disposizione
  */
-
-tetramino_t add_tetramino(char type, int rotation) {
+tetramino_t edit_tetramino(char type, int rotation) {
+    int isOkay=0;
     tetramino_t da_inserire;
-    int isOkay = 1, i, j;
+
     if (type != 'i' && type != 'z' && type != 't' && type != 's' && type != 'l' && type != 'o' && type != 'j') {
         printf("\nSelezione non valida\n");
         exit(0);
@@ -199,116 +382,12 @@ tetramino_t add_tetramino(char type, int rotation) {
         printf("\nRotazione non valida\n");
         exit(0);
     }
-    /*da_inserire = get_LastTetramino(type)  ;*/
 
-    switch (type) {
-        case 'i':
-            if(i_size == 0){
-                printf("\nI tetramini a disposizione di tipo %c sono finiti\n", type);
-                isOkay = 0;
-                break;
-            }
-            for(i = 0; i < TETRAMINO_LATO; i++){
-                for(j = 0; j < TETRAMINO_LATO; j++){
-                    da_inserire.pieces[i][j] = I[i][j];
-                }
-            }
-            --i_size;
-
-            break;
-        case 'j':
-            if(j_size == 0){
-                printf("\nI tetramini a disposizione di tipo %c sono finiti\n", type);
-                isOkay = 0;
-                break;
-            }
-            for(i = 0; i < TETRAMINO_LATO; i++){
-                for(j = 0; j < TETRAMINO_LATO; j++){
-                    da_inserire.pieces[i][j] = J[i][j];
-                }
-            }
-
-            --j_size;
-            break;
-        case 'l':
-            if(l_size == 0){
-                printf("\nI tetramini a disposizione di tipo %c sono finiti\n", type);
-                isOkay = 0;
-                break;
-            }
-            for(i = 0; i < TETRAMINO_LATO; i++){
-                for(j = 0; j < TETRAMINO_LATO; j++){
-                    da_inserire.pieces[i][j] = L[i][j];
-                }
-            }
-
-            --l_size;
-            break;
-        case 'o':
-            if(o_size == 0){
-                printf("\nI tetramini a disposizione di tipo %c sono finiti\n", type);
-                isOkay = 0;
-                break;
-            }
-            for(i = 0; i < TETRAMINO_LATO; i++){
-                for(j = 0; j < TETRAMINO_LATO; j++){
-                    da_inserire.pieces[i][j] = O[i][j];
-                }
-            }
-
-            --o_size;
-            break;
-        case 's':
-            if(s_size == 0){
-                printf("\nI tetramini a disposizione di tipo %c sono finiti\n", type);
-                isOkay = 0;
-                break;
-            }
-            for(i = 0; i < TETRAMINO_LATO; i++){
-                for(j = 0; j < TETRAMINO_LATO; j++){
-                    da_inserire.pieces[i][j] = S[i][j];
-                }
-            }
-
-            --s_size;
-            break;
-        case 't':
-            if(t_size == 0){
-                printf("\nI tetramini a disposizione di tipo %c sono finiti\n", type);
-                isOkay = 0;
-                break;
-            }
-            for(i = 0; i < TETRAMINO_LATO; i++){
-                for(j = 0; j < TETRAMINO_LATO; j++){
-                    da_inserire.pieces[i][j] = T[i][j];
-                }
-            }
-
-            --t_size;
-            break;
-        case 'z':
-            if(z_size == 0){
-                printf("\nI tetramini a disposizione di tipo %c sono finiti\n", type);
-                isOkay = 0;
-                break;
-            }
-            for(i = 0; i < TETRAMINO_LATO; i++){
-                for(j = 0; j < TETRAMINO_LATO; j++){
-                    da_inserire.pieces[i][j] = Z[i][j];
-                }
-            }
-
-            --z_size;
-            break;
-        default:
-            printf("Rotto");
-            break;
-    }
+    isOkay=getLastTetramino(&da_inserire, type);
 
     if(isOkay == 0){
         exit(0);
     }
-
     da_inserire.type = type;
     da_inserire.rotation = rotation;
     da_inserire = rotateTetramino(da_inserire);
@@ -320,16 +399,12 @@ tetramino_t add_tetramino(char type, int rotation) {
         da_inserire = pushTetraminoDown(da_inserire);
     }
 
-
     print_realTetramino(da_inserire);
     printf("\n");
-
 
     while(checkEmptyLeftColumn(da_inserire)){
         da_inserire= pushTetraminoLeft(da_inserire);
     }
-
-
 
     return da_inserire;
 }
@@ -341,22 +416,28 @@ tetramino_t add_tetramino(char type, int rotation) {
 void print_field(int matrix[HEIGHT][WIDTH]) {
     int i, j;
 
-    for (i = 0; i < WIDTH; i++)
+    printf("\t\t");
+    for (i = 0; i < WIDTH; i++) {
         printf("%d\t", i);
+    }
     printf("\n\n\n");
 
     for (i = 0; i < HEIGHT; ++i) {
+        printf("%d\t\t",i);
         for (j = 0; j < WIDTH; j++) {
             switch (matrix[i][j]) {
                 case 0:
                     printf("x\t");
                     break;
+                default:
+                    printf("[]\t");
+                    break;
             }
-
         }
         printf("\n\n");
     }
     printf("\n");
+    printf("\t\t");
     for (i = 0; i < WIDTH; i++)
         printf("%d\t", i);
 
@@ -401,27 +482,19 @@ void print_tetramini(char type, int size) {
     }
 }
 
-//TODO: ruotare i tetramini
-//TODO: posizionare i tatrmini
-//TODO: decrementare il numero di tetramini a disposizione
+
 
 
 int main() {
-    int i, j, win = 0, lose = 0, rotation_selection;
-    int field[HEIGHT][WIDTH];
+    int i, j, win = 0, lose = 0, rotation_selection, colonna;
+    tetramino_t da_inserire;
+    int field[HEIGHT][WIDTH]={0};
     char type_selection;
 
-/* CAMPO DA GIOCO  */
 
-    for (i = 0; i < HEIGHT; ++i) {
-        for (j = 0; j < WIDTH; j++) {
-            field[i][j] = 0;
-        }
-    }
+     while(win == 0 && lose == 0){
 
-    /* while(win == 0 && lose == 0){*/
-printf("Ciao\n");
-    printf("TETRAMINI A DISPOSIZIONE: \n");
+         printf("TETRAMINI A DISPOSIZIONE: \n");
 
     /* NUMERO DI TETRAMINI PER TIPO A DISPOSIZIONE */
 
@@ -444,17 +517,26 @@ printf("Ciao\n");
     print_field(field);
 
     printf("\n\n\nSeleziona un tetramino (inserisci un carattere tra i, j, l, o, s, t, z): ");
-    scanf("%c", &type_selection);
+    scanf("%c", &type_selection); /*TODO DEBUGGARE CON LA MASSIMA URGENZA!!!! SE SI UTILIZZA IL WHILE AL SECONDO GIRO QUA SI ROMPE!!!!!!!!!!!!!!!!!*/
     printf("\nSeleziona una rotazione (inserisci un numero tra 1 e 4): ");
     scanf("%d", &rotation_selection);
-    tetramino_t inserito = add_tetramino(type_selection, rotation_selection);
+     printf("\nSeleziona la colonna dove posizionare il tetramino (inserisci un numero tra 0 e 9): ");
+    scanf("%d", &colonna);
 
-    print_realTetramino(inserito) ;
-    /*TODO fare la funzione che sposta il tetramino il più in basso a sx possibile  */
+    da_inserire = edit_tetramino(type_selection, rotation_selection);
+    print_realTetramino(da_inserire);
 
-    /* }*/
+    addTetramino(&da_inserire, field, colonna);
+
+
+
+     }
 
 
     return 0;
 
 }
+
+
+
+
