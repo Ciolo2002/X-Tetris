@@ -486,13 +486,13 @@ void print_tetramini(char type, int size) {
 
 
 int main() {
-    int i, j, win = 0, lose = 0, rotation_selection, colonna;
+    int i, j, win = 0, lose = 0, rotation_selection, colonna, giallo;
     tetramino_t da_inserire;
     int field[HEIGHT][WIDTH]={0};
     char type_selection;
 
 
-     while(win == 0 && lose == 0){
+     while(/*win == 0 && lose == 0*/ giallo < 5 ){
 
          printf("TETRAMINI A DISPOSIZIONE: \n");
 
@@ -517,7 +517,7 @@ int main() {
     print_field(field);
 
     printf("\n\n\nSeleziona un tetramino (inserisci un carattere tra i, j, l, o, s, t, z): ");
-    scanf("%c", &type_selection); /*TODO DEBUGGARE CON LA MASSIMA URGENZA!!!! SE SI UTILIZZA IL WHILE AL SECONDO GIRO QUA SI ROMPE!!!!!!!!!!!!!!!!!*/
+    scanf(" %c", &type_selection); /*TODO DEBUGGARE CON LA MASSIMA URGENZA!!!! SE SI UTILIZZA IL WHILE AL SECONDO GIRO QUA SI ROMPE!!!!!!!!!!!!!!!!!*/
     printf("\nSeleziona una rotazione (inserisci un numero tra 1 e 4): ");
     scanf("%d", &rotation_selection);
      printf("\nSeleziona la colonna dove posizionare il tetramino (inserisci un numero tra 0 e 9): ");
@@ -528,6 +528,8 @@ int main() {
 
     addTetramino(&da_inserire, field, colonna);
 
+
+    giallo++;
 
 
      }

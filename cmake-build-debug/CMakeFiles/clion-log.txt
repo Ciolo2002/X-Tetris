@@ -1,14 +1,4 @@
 /Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=/opt/homebrew/Cellar/gcc/11.2.0_3/bin/gcc-11 -DCMAKE_DEPENDS_USE_COMPILER=FALSE -G "CodeBlocks - Unix Makefiles" "/Users/nicolapanizzolo/Desktop/università/programmazione /X-Tetris-Nicola"
--- The C compiler identification is GNU 11.2.0
--- Checking whether C compiler has -isysroot
--- Checking whether C compiler has -isysroot - yes
--- Checking whether C compiler supports OSX deployment target flag
--- Checking whether C compiler supports OSX deployment target flag - yes
--- Detecting C compiler ABI info
--- Detecting C compiler ABI info - done
--- Check for working C compiler: /opt/homebrew/Cellar/gcc/11.2.0_3/bin/gcc-11 - skipped
--- Detecting C compile features
--- Detecting C compile features - done
 -- Configuring done
 -- Generating done
 -- Build files have been written to: /Users/nicolapanizzolo/Desktop/università/programmazione /X-Tetris-Nicola/cmake-build-debug
