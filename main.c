@@ -2,10 +2,10 @@
 #include <stdlib.h>
 #include <math.h>  /* SE SI USA CLION INSERIRE NEL FILE CMakeList.txt --> target_link_libraries(X_Tetris_first PRIVATE m)  */
 
-#define WIDTH 10
-#define HEIGHT 15
-#define TETRAMINO_LATO 4
-#define n_tetramini 20
+#define  WIDTH 10
+#define  HEIGHT  15
+#define  n_tetramini 20
+#define TETRAMINO_LATO  4
 
 
 int i_size = n_tetramini;
@@ -17,49 +17,49 @@ int t_size = n_tetramini;
 int z_size = n_tetramini;
 
 
-int I[4][4] = {
+const int I[4][4] = {
         {1, 0, 0, 0},
         {1, 0, 0, 0},
         {1, 0, 0, 0},
         {1, 0, 0, 0}
 };
 
-int J[4][4] = {
+const int J[4][4] = {
         {0, 0, 0, 0},
         {0, 2, 0, 0},
         {0, 2, 0, 0},
         {2, 2, 0, 0}
 };
 
-int L[4][4] = {
+const int L[4][4] = {
         {0, 0, 0, 0},
         {3, 0, 0, 0},
         {3, 0, 0, 0},
         {3, 3, 0, 0}
 };
 
-int O[4][4] = {
+const int O[4][4] = {
         {0, 0, 0, 0},
         {0, 0, 0, 0},
         {4, 4, 0, 0},
         {4, 4, 0, 0}
 };
 
-int S[4][4] = {
+const int S[4][4] = {
         {0, 0, 0, 0},
         {0, 0, 0, 0},
         {0, 5, 5, 0},
         {5, 5, 0, 0}
 };
 
-int T[4][4] = {
+const int T[4][4] = {
         {0, 0, 0, 0},
         {0, 0, 0, 0},
         {6, 6, 6, 0},
         {0, 6, 0, 0}
 };
 
-int Z[4][4] = {
+const int Z[4][4] = {
         {0, 0, 0, 0},
         {0, 0, 0, 0},
         {7, 7, 0, 0},
@@ -67,13 +67,58 @@ int Z[4][4] = {
 };
 
 
-int deleteRows(int campo[15][10]);
 
 typedef struct tetramino {
     char type;
     int rotation;
     int pieces[TETRAMINO_LATO][TETRAMINO_LATO];
 } tetramino_t;
+
+
+/**
+ * Questa funzione spinge il tutto quello che c'è nella matrice giù di 1 riga rispetto alla riga indicata.
+ * Viene utilizzata quando il giocatore completa una riga che quindi deve essere svuotata.
+ * @param campo
+ * @param col
+ */
+void pushCampoDown(int campo[HEIGHT][WIDTH], int col) {
+    int temp[WIDTH]={0};
+    int i=0;
+    for (col; col>0; col-- ){
+        for (i=0; i<WIDTH; i++){
+            temp[i]=campo[col][i];
+            campo[col][i]=campo[col-1][i];
+            campo[col-1][i]=temp[i];
+        }
+    }
+
+}
+
+/**
+ *Questa funnzione cerca le righe del campo da gioco dove non ci sono 0
+ * come nel gioco del vero tetris in quel caso, l'intera riga viene elimata ed il resto di campo di gioco spostato in basso
+ * @param campo
+ * @return  Il numero di righe che sono state eliminate, utile per calcolare il putenggio.
+ */
+int deleteRows(int campo [HEIGHT][WIDTH]) {
+    int i,j, fullRow=0, deletedRows_counter=0;
+    for(i=HEIGHT-1;i>=0;i--){
+        fullRow=1;
+        for(j=WIDTH-1;j>=0;j--){ /** ciclo di controllo, se la riga è completamente piena*/
+            if(campo[i][j]==0){
+                fullRow=0;
+            }
+        }
+        if(fullRow){
+            deletedRows_counter++;
+            pushCampoDown(campo, i); /* FA IN MODO CHE IL RESTO DI MATRICE DEL CAMPO VENGA SPOSTATA IN BASSO */
+            i=HEIGHT-1; /* nel caso in cui ci sia stata una riga eliminata, la matrice è cambiata e quindi devo ripetere il controllo dall'inizio!!!! */
+        }
+    }
+    return deletedRows_counter;
+}
+
+
 
 
 /**
@@ -88,7 +133,6 @@ void place_tetrimino(int pField[HEIGHT][WIDTH], tetramino_t *pTetramino, int col
     for (i = TETRAMINO_LATO - 1; i >= 0; i--) {
         for (j = TETRAMINO_LATO - 1; j >= 0; j--) {
             if (pTetramino->pieces[i][j] != 0) {
-                printf(" filed %d  tetramino %d \n", pField[riga][j + colonna], pTetramino->pieces[i][j]);
                 pField[riga][j + colonna] = pTetramino->pieces[i][j];
                 bool_placed = 1;
             }
@@ -287,7 +331,7 @@ void print_realTetramino(tetramino_t tetramino) {
  * @param copy
  * @param source
  */
-void copyTetramino(tetramino_t *copy, int source[TETRAMINO_LATO][TETRAMINO_LATO]) {
+void copyTetramino(tetramino_t *copy, const int source[TETRAMINO_LATO][TETRAMINO_LATO]) {
     int i, j;
     for (i = 0; i < TETRAMINO_LATO; i++) {
         for (j = 0; j < TETRAMINO_LATO; j++) {
@@ -488,7 +532,7 @@ int main() {
     char type_selection;
 
 
-    while (/*win == 0 && lose == 0*/ giallo < 5) {
+    while (/*win == 0 && lose == 0*/ giallo < 50) {
 
         printf("TETRAMINI A DISPOSIZIONE: \n");
 
@@ -524,7 +568,7 @@ int main() {
         /* todo creare una struct giocatore e fare in modo che abbia come attributi il punteggio e il "proprio campo da gioco"
           questo perchè dobbiamo tenere conto dei punti ed oltretutto ci sono due giocatori che hanno due campi da gioco distinti */
         while(deleteRows(field)){
-                printf("Ho elimanto righe" );
+            printf("Ho elimanto righe" );
         }
 
 
@@ -536,38 +580,6 @@ int main() {
 
     return 0;
 
-}
-
-
-
-
-/**
- *Questa funnzione cerca le righe del campo da gioco dove non ci sono 0
- * come nel gioco del vero tetris in quel caso, l'intera riga viene elimata ed il resto di campo di gioco spostato in basso
- * @param campo
- * @return  Il numero di righe che sono state eliminate, utile per calcolare il putenggio.
- */
-int deleteRows(int campo [HEIGHT][WIDTH]) {
-    int i,j, fullRow=0, deletedRows_counter=0;
-    for(i=HEIGHT-1;i>=0;i--){
-        fullRow=1;
-        for(j=WIDTH-1;j>=0;j--){ /** ciclo di controllo, se la riga è completamente piena*/
-            if(campo[i][j]==0){
-                fullRow=0;
-            }
-        }
-        if(fullRow){
-            deletedRows_counter++;
-            for(j=WIDTH-1;j>=0;j--){ /** dove azzero tutta la riga*/
-               campo[i][j]=0;
-            }
-            /* TODO FAR IN MODO CHE IL RESTO DI MATRICE VENGA SPOSTATA IN BASSO */
-
-
-            i=HEIGHT-1; /* nel caso in cui ci sia stata una riga eliminata, la matrice è cambiata e quindi devo ripetere il controllo dall'inizio!!!! */
-        }
-    }
-    return deletedRows_counter;
 }
 
 
