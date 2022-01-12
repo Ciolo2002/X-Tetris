@@ -152,19 +152,19 @@ void place_tetrimino(int pField[HEIGHT][WIDTH], tetramino_t *pTetramino, int col
  * @return
  */
 int maxTetraminoWidth(tetramino_t *pTetramino) {
-    int lunghezza_max_tetramino = 0, temp, i, j;
-    for (i = 0; i < TETRAMINO_LATO; i++) {
-        temp = 0;
-        for (j = 0; j < TETRAMINO_LATO; j++) {
-            if (pTetramino->pieces[i][j] != 0) {
-                temp++;
+    int max_tetramino_width = 0, i, j, tmp = 0, j_record = -1;
+    for(j = 0; j < TETRAMINO_LATO; j++){
+        for(i = 0; i < TETRAMINO_LATO; i++){
+            if(pTetramino->pieces[i][j] != 0){
+                if(j_record != j){
+                    max_tetramino_width++;
+                    j_record = j;
+                }
+
             }
         }
-        if (temp >= lunghezza_max_tetramino) {
-            lunghezza_max_tetramino = temp;
-        }
     }
-    return lunghezza_max_tetramino;
+    return max_tetramino_width;
 }
 
 
@@ -178,12 +178,8 @@ int maxTetraminoWidth(tetramino_t *pTetramino) {
  */
 void addTetramino(tetramino_t *da_inserire, int field[HEIGHT][WIDTH], int col) {
 
-    int lunghezza_max_tetramino, i, j, z, temp = -1, calcomagicoastrale = 0;
-    lunghezza_max_tetramino = maxTetraminoWidth(da_inserire);
-    if ((col + lunghezza_max_tetramino) > WIDTH || (col + lunghezza_max_tetramino) <= 0) {
-        printf("Non puoi posizione un tetramino fuori dal campo di gioco!!!");
-        exit(0); /* TODO: non terminare il programma ma far ripetere la scelta */
-    }
+    int  i, j, z, temp = -1, calcomagicoastrale = 0;
+
 
     for (i = HEIGHT - 1; i >= 0; i--) { /*riga campo da gioco*/
         temp = -1;
@@ -421,15 +417,6 @@ tetramino_t edit_tetramino(char type, int rotation) {
     int isOkay = 0;
     tetramino_t da_inserire;
 
-    if (type != 'i' && type != 'z' && type != 't' && type != 's' && type != 'l' && type != 'o' && type != 'j') {
-        printf("\nSelezione non valida\n");
-        exit(0);
-    }
-    if (rotation < 1 || rotation > 4) {
-        printf("\nRotazione non valida\n");
-        exit(0);
-    }
-
     isOkay = getLastTetramino(&da_inserire, type);
 
     if (isOkay == 0) {
@@ -525,6 +512,28 @@ void print_tetramini(char type, int size) {
 }
 
 
+int exception_t_r(char type, int rotation){
+    if (type != 'i' && type != 'z' && type != 't' && type != 's' && type != 'l' && type != 'o' && type != 'j') {
+        printf("\nSelezione non valida\n");
+        return 1;
+    }
+    if (rotation < 1 || rotation > 4) {
+        printf("\nRotazione non valida\n");
+        return 1;
+    }
+    return 0;
+}
+
+int exception_width(tetramino_t *da_inserire, int col){
+    int lunghezza_max_tetramino;
+    lunghezza_max_tetramino = maxTetraminoWidth(da_inserire);
+    if ((col + lunghezza_max_tetramino) > WIDTH || (col + lunghezza_max_tetramino) <= 0) {
+        printf("Non puoi posizione un tetramino fuori dal campo di gioco!!!");
+        return 1;
+    }
+    return 0;
+}
+
 int main() {
     int i, j, win = 0, lose = 0, rotation_selection, colonna, giallo;
     tetramino_t da_inserire;
@@ -555,16 +564,23 @@ int main() {
 
 
         print_field(field);
+        while(1) {
 
-        printf("\n\n\nSeleziona un tetramino (inserisci un carattere tra i, j, l, o, s, t, z): ");
-        scanf(" %c", &type_selection);
-        printf("\nSeleziona una rotazione (inserisci un numero tra 1 e 4): ");
-        scanf("%d", &rotation_selection);
-        printf("\nSeleziona la colonna dove posizionare il tetramino (inserisci un numero tra 0 e 9): ");
-        scanf("%d", &colonna);
-        da_inserire = edit_tetramino(type_selection, rotation_selection);
-        addTetramino(&da_inserire, field, colonna);
+            printf("\n\n\nSeleziona un tetramino (inserisci un carattere tra i, j, l, o, s, t, z): ");
+            scanf(" %c", &type_selection);
+            printf("\nSeleziona una rotazione (inserisci un numero tra 1 e 4): ");
+            scanf(" %d", &rotation_selection);
+            printf("\nSeleziona la colonna dove posizionare il tetramino (inserisci un numero tra 0 e 9): ");
+            scanf(" %d", &colonna);
+            if (exception_t_r(type_selection, rotation_selection) == 0) {
+                da_inserire = edit_tetramino(type_selection, rotation_selection);
+                if(exception_width(&da_inserire, colonna) == 0) {
+                    addTetramino(&da_inserire, field, colonna);
+                    break;
+                }
+            }
 
+        }
         /* todo creare una struct giocatore e fare in modo che abbia come attributi il punteggio e il "proprio campo da gioco"
           questo perchè dobbiamo tenere conto dei punti ed oltretutto ci sono due giocatori che hanno due campi da gioco distinti */
         while(deleteRows(field)){
