@@ -79,6 +79,9 @@
 		<Unit filename="/Users/nicolapanizzolo/Desktop/università/programmazione /X-Tetris-Nicola/main.c">
 			<Option target="X_Tetris_first"/>
 		</Unit>
+		<Unit filename="/Users/nicolapanizzolo/Desktop/università/programmazione /X-Tetris-Nicola/tetralib.h">
+			<Option target="X_Tetris_first"/>
+		</Unit>
 		<Unit filename="/Users/nicolapanizzolo/Desktop/università/programmazione /X-Tetris-Nicola/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\"/>
 		</Unit>
