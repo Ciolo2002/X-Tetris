@@ -1,3 +1,3 @@
-ToolSet: 1.0 (local)Options: 
+ToolSet: Ubuntu 20.04 LTS (local)Options: 
 
-Options:-DCMAKE_C_COMPILER=/opt/homebrew/Cellar/gcc/11.2.0_3/bin/gcc-11
+Options:-DCMAKE_CXX_COMPILER=/

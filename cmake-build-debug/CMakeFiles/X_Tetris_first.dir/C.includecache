@@ -6,9 +6,13 @@
 
 #IncludeRegexTransform: 
 
-/Users/nicolapanizzolo/Desktop/università/programmazione /X-Tetris-Nicola/main.c
+/home/michael/X-Tetris-Nicola/main.c
 stdio.h
 -
 stdlib.h
 -
+tetralib.h
+/home/michael/X-Tetris-Nicola/tetralib.h
+
+/home/michael/X-Tetris-Nicola/tetralib.h
 
