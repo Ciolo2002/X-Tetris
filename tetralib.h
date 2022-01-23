@@ -1,16 +1,25 @@
 #define  WIDTH 10
 #define  HEIGHT  15
-#define  n_tetramini 20
+#define  n_tetramini_per_type 20
 #define TETRAMINO_LATO  4
+#define TETRAMINO_TYPES 7
 
-
-int i_size = n_tetramini;
-int j_size = n_tetramini;
-int l_size = n_tetramini;
-int o_size = n_tetramini;
-int s_size = n_tetramini;
-int t_size = n_tetramini;
-int z_size = n_tetramini;
+/**
+ * Variabili deprecate siccome ora si trovano all'interno
+ * di un vettore nella struttra del player.
+ * Ogni cella di quel vettore contiene il numero di tetramini per tipo.
+ *
+ * L'ordine di posizione da 0 a 6 celle di quel vettore rispecchia rispettivamente dall'alto al basso
+ * l'ordine di queste variaibli:
+ * quindi i_size sara [0] .... fino a z_size che sarà [6]
+ */
+/*int i_size = n_tetramini_per_type;
+int j_size = n_tetramini_per_type;
+int l_size = n_tetramini_per_type;
+int o_size = n_tetramini_per_type;
+int s_size = n_tetramini_per_type;
+int t_size = n_tetramini_per_type;
+int z_size = n_tetramini_per_type; */
 
 
 const int I[4][4] = {
@@ -66,6 +75,9 @@ const int Z[4][4] = {
 typedef struct player {
     unsigned int points;
     int field[HEIGHT][WIDTH];
+    int tetramino_avibles[TETRAMINO_TYPES];
+
+
 } player_t;
 
 
@@ -74,6 +86,21 @@ typedef struct tetramino {
     int rotation;
     int pieces[TETRAMINO_LATO][TETRAMINO_LATO];
 } tetramino_t;
+
+
+
+/**
+ * Inizializza un giocatore prima di iniziare la partita:
+ * in particolare setta la quantità di tetramini a disposizione per tipo.
+ * @param player
+ */
+void player_initzializer(player_t * player){
+    int i=0;
+    for(i=0;i<TETRAMINO_TYPES;i++){
+        player->tetramino_avibles[i]=n_tetramini_per_type;
+    }
+}
+
 
 
 /**
@@ -338,71 +365,71 @@ void copyTetramino(tetramino_t *copy, const int source[TETRAMINO_LATO][TETRAMINO
     }
 }
 
-int getLastTetramino(tetramino_t *da_inserire, char type) {
+int getLastTetramino(tetramino_t *da_inserire, char type, player_t * player) {
     int isOkay = 1;
     switch (type) {
         case 'i':
-            if (i_size <= 0) {
+            if (player->tetramino_avibles[0] <= 0) {
                 printf("\nI tetramini a disposizione di tipo %c sono finiti\n", type);
                 isOkay = 0;
                 break;
             }
             copyTetramino(da_inserire, I);
-            --i_size;
+            --player->tetramino_avibles[0];
             break;
         case 'j':
-            if (j_size <= 0) {
+            if (player->tetramino_avibles[1] <= 0) {
                 printf("\nI tetramini a disposizione di tipo %c sono finiti\n", type);
                 isOkay = 0;
                 break;
             }
             copyTetramino(da_inserire, J);
-            --j_size;
+            --player->tetramino_avibles[1];
             break;
         case 'l':
-            if (l_size <= 0) {
+            if (player->tetramino_avibles[2] <= 0) {
                 printf("\nI tetramini a disposizione di tipo %c sono finiti\n", type);
                 isOkay = 0;
                 break;
             }
             copyTetramino(da_inserire, L);
-            --l_size;
+            --player->tetramino_avibles[2];
             break;
         case 'o':
-            if (o_size <= 0) {
+            if (player->tetramino_avibles[3] <= 0) {
                 printf("\nI tetramini a disposizione di tipo %c sono finiti\n", type);
                 isOkay = 0;
                 break;
             }
             copyTetramino(da_inserire, O);
-            --o_size;
+            --player->tetramino_avibles[3];
             break;
         case 's':
-            if (s_size <= 0) {
+            if (player->tetramino_avibles[4] <= 0) {
                 printf("\nI tetramini a disposizione di tipo %c sono finiti\n", type);
                 isOkay = 0;
                 break;
             }
             copyTetramino(da_inserire, S);
-            --s_size;
+            --player->tetramino_avibles[4];
             break;
         case 't':
-            if (t_size <= 0) {
+            if (player->tetramino_avibles[5] <= 0) {
                 printf("\nI tetramini a disposizione di tipo %c sono finiti\n", type);
                 isOkay = 0;
                 break;
             }
             copyTetramino(da_inserire, T);
-            --t_size;
+            --player->tetramino_avibles[5];
             break;
         case 'z':
-            if (z_size <= 0) {
+            if (player->tetramino_avibles[6] <= 0) {
                 printf("\nI tetramini a disposizione di tipo %c sono finiti\n", type);
                 isOkay = 0;
                 break;
             }
             copyTetramino(da_inserire, Z);
-            --z_size;
+            --player->tetramino_avibles[6];
             break;
         default:
             printf("Rotto");
@@ -415,11 +442,11 @@ int getLastTetramino(tetramino_t *da_inserire, char type) {
 /**
  * Funzione che crea effettivamente il tetramino e decrementa la quantità di tetramini a disposizione
  */
-tetramino_t edit_tetramino(char type, int rotation) {
+tetramino_t edit_tetramino(char type, int rotation, player_t * player) {
     int isOkay = 0;
     tetramino_t da_inserire;
 
-    isOkay = getLastTetramino(&da_inserire, type);
+    isOkay = getLastTetramino(&da_inserire, type, player);
 
     if (isOkay == 0) {
         exit(0);

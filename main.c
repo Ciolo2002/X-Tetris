@@ -10,8 +10,12 @@ int main() {
     tetramino_t da_inserire;
     int game_type;
     char type_selection;
-    player_t player_1 = {0, {0}};
-    player_t player_2 = {0, {0}};
+    player_t player_1 = {0, {0}, {n_tetramini_per_type}};
+    player_t player_2 = {0, {0}, {n_tetramini_per_type}};
+
+
+    player_initzializer(&player_1);
+    player_initzializer(&player_2);
 
     printf("WELCOME IN X-TETRIS !!!!!! \n Seleziona la modalita' di gioco:"
            " \n - 1 per giocare in single-player,"
@@ -34,18 +38,15 @@ int main() {
 
         /* NUMERO DI TETRAMINI PER TIPO A DISPOSIZIONE */
 
-        print_tetramini('i', i_size);
-        print_tetramini('j', j_size);
-        print_tetramini('l', l_size);
-        print_tetramini('o', o_size);
-        print_tetramini('s', s_size);
-        print_tetramini('t', t_size);
-        print_tetramini('z', z_size);
+        print_tetramini('i', player_1.tetramino_avibles[0]);
+        print_tetramini('j', player_1.tetramino_avibles[1]);
+        print_tetramini('l', player_1.tetramino_avibles[2]);
+        print_tetramini('o', player_1.tetramino_avibles[3]);
+        print_tetramini('s', player_1.tetramino_avibles[4]);
+        print_tetramini('t', player_1.tetramino_avibles[5]);
+        print_tetramini('z', player_1.tetramino_avibles[6]);
 
         printf("\n\n------------ GAME FIELD: ------------\n\n");
-
-
-
         /* SELEZIONE TETRAMINO    */
 
 
@@ -64,7 +65,7 @@ int main() {
             printf("\nSeleziona la colonna dove posizionare il tetramino (inserisci un numero tra 0 e 9): ");
             scanf(" %d", &colonna);
             if (exception_t_r(type_selection, rotation_selection) == 0) {
-                da_inserire = edit_tetramino(type_selection, rotation_selection);
+                da_inserire = edit_tetramino(type_selection, rotation_selection, &player_1);
                 if (exception_width(&da_inserire, colonna) == 0) {
                     addTetramino(&da_inserire, player_1.field, colonna);
                     break;
