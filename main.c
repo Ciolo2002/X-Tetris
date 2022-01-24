@@ -3,12 +3,11 @@
 #include "tetralib.h"
 
 
-
 int main() {
-    int i, j, win = 0, lose = 0, rotation_selection, colonna, giallo = 0, player_selector=0;
-    int ciao=0;
-    int cnt_rows_deleted = 0 ;
-    tetramino_t da_inserire={0};
+    int i, j, win = 0, lose = 0, rotation_selection, colonna, giallo = 0, player_selector = 0;
+    int ciao = 0;
+    int cnt_rows_deleted = 0;
+    tetramino_t da_inserire = {0, 0, {0}};
     int game_type;
     char type_selection;
     game_t game;
@@ -30,21 +29,20 @@ int main() {
         exit(0);
     }
 
-    if(game_type==1){
-        game.players= malloc(sizeof (player_t));
-        game.players[0]=empty_player;
-    }else{
-        game.players= malloc(sizeof (player_t)*2);
-        game.players[0]=empty_player;
-        game.players[1]=empty_player;
+    if (game_type == 1) {
+        game.players = (player_t *)malloc(sizeof(player_t));
+        game.players[0] = empty_player;
+    } else {
+        game.players = (player_t *)malloc(sizeof(player_t) * 2);
+        game.players[0] = empty_player;
+        game.players[1] = empty_player;
     }
 
 
     while (/*win == 0 && lose == 0*/ giallo < 50) {
 
 
-
-        youLose(&empty_player);
+        youLose(&game.players[player_selector]);
         printf("TETRAMINI A DISPOSIZIONE: \n");
         /* NUMERO DI TETRAMINI PER TIPO A DISPOSIZIONE */
         print_tetramini('i', game.players[player_selector].avaiable_tetramini[0]);
@@ -62,10 +60,10 @@ int main() {
 
         print_field(game.players[player_selector].field);
 
-        printf("\nSCORE: %d",game.players[player_selector].points);
-        printf("\nDELETED ROWS: %d",cnt_rows_deleted);
+        printf("\nSCORE: %d", game.players[player_selector].points);
+        printf("\nDELETED ROWS: %d", cnt_rows_deleted);
 
-        while (1) {
+
 
             printf("\n\n\nSeleziona un tetramino (inserisci un carattere tra i, j, l, o, s, t, z): ");
             scanf(" %c", &type_selection);
@@ -74,30 +72,34 @@ int main() {
             printf("\nSeleziona la colonna dove posizionare il tetramino (inserisci un numero tra 0 e 9): ");
             scanf(" %d", &colonna);
             if (exception_t_r(type_selection, rotation_selection) == 0) {
-
-                    if (getLastTetramino(&da_inserire, type_selection, &game.players[player_selector]) != 0) {
-                        da_inserire = edit_tetramino(type_selection, rotation_selection,&game.players[player_selector]);
-                        if (exception_width(&da_inserire, colonna) == 0){
-                            addTetramino(&da_inserire, game.players[player_selector].field, colonna);
+                if (getLastTetramino(&da_inserire, type_selection, &game.players[player_selector])!= 0) {
+                    da_inserire = edit_tetramino(type_selection, rotation_selection, &game.players[player_selector], da_inserire);
+                    if (exception_width(&da_inserire, colonna) == 0) {
+                        addTetramino(&da_inserire, game.players[player_selector].field, colonna);
+                        cnt_rows_deleted = (deleteRows(game.players[player_selector].field));
+                        if(cnt_rows_deleted!=0){
+                            increment_points(&game.players[player_selector].points, &cnt_rows_deleted);
+                            cnt_rows_deleted=0;
+                            if(game_type!=1){
+                                if(player_selector==1){
+                                    swapRows(cnt_rows_deleted, &game.players[0]);
+                                }else{
+                                    swapRows(cnt_rows_deleted, &game.players[1]);
+                                }
+                            }
                         }
-                        break;
+                        player_selector = changePlayer(game_type, player_selector);
                     }
-
-            }
-        /* todo creare una struct giocatore e fare in modo che abbia come attributi il punteggio e il "proprio campo da gioco"
-          questo perchè dobbiamo tenere conto dei punti ed oltretutto ci sono due giocatori che hanno due campi da gioco distinti */
-        cnt_rows_deleted+= (deleteRows(game.players[player_selector].field)) ;
+                }
 
 
-        increment_points(&game.players[player_selector].points, &cnt_rows_deleted);
+            /* todo creare una struct giocatore e fare in modo che abbia come attributi il punteggio e il "proprio campo da gioco"
+              questo perchè dobbiamo tenere conto dei punti ed oltretutto ci sono due giocatori che hanno due campi da gioco distinti */
 
+        }
 
-
-        player_selector=changePlayer(game_type, player_selector);
     }
-    printf("\ndio\ncaneboiamerda onto \t madonna quella troia puttana");
-
-
+    printf("Fine");
     return 0;
 }
 

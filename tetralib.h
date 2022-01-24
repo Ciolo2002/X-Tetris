@@ -95,6 +95,13 @@ typedef struct game{
 }game_t;
 
 
+
+
+void swapRows(int deleted_rows, player_t *opponent){
+
+}
+
+
 int changePlayer (int game_type, int  player_selector){
     if(game_type==1){  /* selettore del giocatore */
         player_selector=0;
@@ -141,7 +148,7 @@ void player_initializer(player_t * player){
  * @param campo
  * @param col
  */
-void pushCampoDown(int campo[HEIGHT][WIDTH], int col) {
+void pushFieldDown(int campo[HEIGHT][WIDTH], int col) {
     int temp[WIDTH] = {0};
     int i = 0;
     for (col; col > 0; col--) {
@@ -164,18 +171,19 @@ int deleteRows(int campo[HEIGHT][WIDTH]) {
     int i, j, fullRow = 1, deleted_rows=0;
 
     for (i = HEIGHT - 1; i >= 0; i--) {
+        fullRow = 1;
         for (j = WIDTH - 1; j >= 0; j--) { /** ciclo di controllo, se la riga è completamente piena*/
             if (campo[i][j] == 0) {
                 fullRow = 0;
             }
         }
         if (fullRow) {
-            for (j = WIDTH - 1; j >= 0; j--) { //TODO OTIMIZZARE; SECONDO ME SI PUO FARE ANCHE SENZA FOR MA NON SO COME RIP
+            for (j = WIDTH - 1; j >= 0; j--) {
                 campo[i][j] = 0;
             }
-            pushCampoDown(campo, i); /* FA IN MODO CHE IL RESTO DI MATRICE DEL CAMPO VENGA SPOSTATA IN BASSO */
+            pushFieldDown(campo, i); /* FA IN MODO CHE IL RESTO DI MATRICE DEL CAMPO VENGA SPOSTATA IN BASSO */
             i = HEIGHT - 1; /* nel caso in cui ci sia stata una riga eliminata, la matrice è cambiata e quindi devo ripetere il controllo dall'inizio!!!! */
-            deleted_rows++;
+            ++deleted_rows;
         }
     }
     return deleted_rows;
@@ -225,7 +233,7 @@ int maxTetraminoWidth(tetramino_t *pTetramino){
         }
     }
 
-    printf("MAX TERA WIDTH: %d", max_tetramino_width);
+
 
     return max_tetramino_width;
 }
@@ -348,11 +356,31 @@ int checkEmptyLeftColumn(tetramino_t tetramino) {
     return 1;
 }
 
+
+
+/**
+ * stampa l'effettivo tetramino, si può usare anche solo per fare i test e poi per giocare usariamo l'altra print che è più carina.
+ * @param tetramino
+ */
+void print_realTetramino(tetramino_t tetramino) {
+    int i, j;
+    for (i = 0; i < TETRAMINO_LATO; i++) {
+        for (j = 0; j < TETRAMINO_LATO; j++) {
+            printf("%d", tetramino.pieces[i][j]);
+        }
+        printf("\n");
+    }
+}
+
+
 tetramino_t rotateTetramino(tetramino_t tetramino1) {
     tetramino_t temp = tetramino1;
     int i, j;
     int rotation = tetramino1.rotation;
-    if (tetramino1.type == 'o' || (tetramino1.rotation == 1)) {
+
+
+
+    if (tetramino1.type == 'o' || tetramino1.rotation == 1) {
         return tetramino1;
     }
     /* se il tetramino è di tipo I, S o Z e la rotazione è 3 ritorna il tetramino di partenza */
@@ -368,21 +396,8 @@ tetramino_t rotateTetramino(tetramino_t tetramino1) {
         rotation--;
         tetramino1 = temp;
     }
-    return tetramino1;
-}
 
-/**
- * stampa l'effettivo tetramino, si può usare anche solo per fare i test e poi per giocare usariamo l'altra print che è più carina.
- * @param tetramino
- */
-void print_realTetramino(tetramino_t tetramino) {
-    int i, j;
-    for (i = 0; i < TETRAMINO_LATO; i++) {
-        for (j = 0; j < TETRAMINO_LATO; j++) {
-            printf("%d", tetramino.pieces[i][j]);
-        }
-        printf("\n");
-    }
+    return tetramino1;
 }
 
 /**
@@ -476,18 +491,13 @@ int getLastTetramino(tetramino_t *da_inserire, char type, player_t * player) {
 /**
  * Funzione che crea effettivamente il tetramino e decrementa la quantità di tetramini a disposizione
  */
-tetramino_t edit_tetramino(char type, int rotation, player_t * player) {
-    tetramino_t da_inserire;
-
+tetramino_t edit_tetramino(char type, int rotation, player_t * player, tetramino_t da_inserire) {
     da_inserire.type = type;
     da_inserire.rotation = rotation;
     da_inserire = rotateTetramino(da_inserire);
 
-    print_realTetramino(da_inserire);
-    printf("test\n");
 
-    while (checkEmptyLastRow(
-            da_inserire)) { /*finchè l'ultima la più in basso della matrice è fatta di soli 0 porto il tetramino in basso*/
+    while (checkEmptyLastRow( da_inserire)) { /*finchè l'ultima la più in basso della matrice è fatta di soli 0 porto il tetramino in basso*/
         da_inserire = pushTetraminoDown(da_inserire);
     }
 
