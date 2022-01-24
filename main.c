@@ -5,9 +5,10 @@
 
 
 int main() {
-    int i, j, win = 0, lose = 0, rotation_selection, colonna, giallo = 0;
+    int i, j, win = 0, lose = 0, rotation_selection, colonna, giallo = 0, player_selector=0;
+    int ciao=0;
     int cnt_rows_deleted = 0 ;
-    tetramino_t da_inserire;
+    tetramino_t da_inserire={0};
     int game_type;
     char type_selection;
     game_t game;
@@ -27,15 +28,24 @@ int main() {
     if (game_type != 1 && game_type != 2 && game_type != 3) {
         printf(" La modalita' %d arriverà presto!!", game_type);
         exit(0);
-    } else {
-        printf("OKAY LET'S GO!");
+    }
+
+    if(game_type==1){
+        game.players= malloc(sizeof (player_t));
+        game.players[0]=empty_player;
+    }else{
+        game.players= malloc(sizeof (player_t)*2);
+        game.players[0]=empty_player;
+        game.players[1]=empty_player;
     }
 
 
     while (/*win == 0 && lose == 0*/ giallo < 50) {
 
-        printf("TETRAMINI A DISPOSIZIONE: \n");
 
+
+        youLose(&empty_player);
+        printf("TETRAMINI A DISPOSIZIONE: \n");
         /* NUMERO DI TETRAMINI PER TIPO A DISPOSIZIONE */
         print_tetramini('i', game.players[player_selector].avaiable_tetramini[0]);
         print_tetramini('j', game.players[player_selector].avaiable_tetramini[1]);
@@ -50,9 +60,9 @@ int main() {
 
 
 
-        print_field(player_1.field);
+        print_field(game.players[player_selector].field);
 
-        printf("\nSCORE: %d",player_1.points);
+        printf("\nSCORE: %d",game.players[player_selector].points);
         printf("\nDELETED ROWS: %d",cnt_rows_deleted);
 
         while (1) {
@@ -73,13 +83,13 @@ int main() {
                         break;
                     }
 
-        }
+            }
         /* todo creare una struct giocatore e fare in modo che abbia come attributi il punteggio e il "proprio campo da gioco"
           questo perchè dobbiamo tenere conto dei punti ed oltretutto ci sono due giocatori che hanno due campi da gioco distinti */
-        cnt_rows_deleted+= (deleteRows(player_1.field)) ;
+        cnt_rows_deleted+= (deleteRows(game.players[player_selector].field)) ;
 
 
-        increment_points(&player_1.points, &cnt_rows_deleted);
+        increment_points(&game.players[player_selector].points, &cnt_rows_deleted);
 
 
 

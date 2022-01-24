@@ -90,6 +90,37 @@ typedef struct tetramino {
 
 
 
+typedef struct game{
+    player_t * players;
+}game_t;
+
+
+int changePlayer (int game_type, int  player_selector){
+    if(game_type==1){  /* selettore del giocatore */
+        player_selector=0;
+    }else{
+        if(player_selector==0){
+            player_selector=1;
+        }else{
+            player_selector=0;
+        }
+    }
+    return player_selector;
+}
+
+
+void youLose(player_t * player){
+    int i;
+    for(i=0;i<TETRAMINO_TYPES;i++){
+        if(player->avaiable_tetramini[i]!=0){
+            return;
+        }
+    }
+    printf("\nHai finito tutti i tetramini!!!\n");
+    exit(0);
+}
+
+
 /**
  * Inizializza un giocatore prima di iniziare la partita:
  * in particolare setta la quantità di tetramini a disposizione per tipo.
@@ -181,8 +212,8 @@ void place_tetramino(int pField[HEIGHT][WIDTH], tetramino_t *pTetramino, int col
  * @param pTetramino
  * @return
  */
-int maxTetraminoWidth(tetramino_t *pTetramino) {
-    int max_tetramino_width = 0, i, j, tmp = 0, j_record = -1;
+int maxTetraminoWidth(tetramino_t *pTetramino){
+    int max_tetramino_width = 0, i, j, j_record = -1;
     for (j = 0; j < TETRAMINO_LATO; j++) {
         for (i = 0; i < TETRAMINO_LATO; i++) {
             if (pTetramino->pieces[i][j] != 0) {
@@ -190,10 +221,12 @@ int maxTetraminoWidth(tetramino_t *pTetramino) {
                     max_tetramino_width++;
                     j_record = j;
                 }
-
             }
         }
     }
+
+    printf("MAX TERA WIDTH: %d", max_tetramino_width);
+
     return max_tetramino_width;
 }
 
@@ -449,6 +482,9 @@ tetramino_t edit_tetramino(char type, int rotation, player_t * player) {
     da_inserire.type = type;
     da_inserire.rotation = rotation;
     da_inserire = rotateTetramino(da_inserire);
+
+    print_realTetramino(da_inserire);
+    printf("test\n");
 
     while (checkEmptyLastRow(
             da_inserire)) { /*finchè l'ultima la più in basso della matrice è fatta di soli 0 porto il tetramino in basso*/
