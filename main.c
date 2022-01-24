@@ -10,12 +10,12 @@ int main() {
     tetramino_t da_inserire;
     int game_type;
     char type_selection;
-    player_t player_1 = {0, {0}, {n_tetramini_per_type}};
-    player_t player_2 = {0, {0}, {n_tetramini_per_type}};
+    game_t game;
 
 
-    player_initzializer(&player_1);
-    player_initzializer(&player_2);
+    player_t empty_player = {0, {0}, {n_tetramini_per_type}};
+    player_initializer(&empty_player);
+
 
     printf("WELCOME IN X-TETRIS !!!!!! \n Seleziona la modalita' di gioco:"
            " \n - 1 per giocare in single-player,"
@@ -37,14 +37,13 @@ int main() {
         printf("TETRAMINI A DISPOSIZIONE: \n");
 
         /* NUMERO DI TETRAMINI PER TIPO A DISPOSIZIONE */
-
-        print_tetramini('i', player_1.tetramino_avibles[0]);
-        print_tetramini('j', player_1.tetramino_avibles[1]);
-        print_tetramini('l', player_1.tetramino_avibles[2]);
-        print_tetramini('o', player_1.tetramino_avibles[3]);
-        print_tetramini('s', player_1.tetramino_avibles[4]);
-        print_tetramini('t', player_1.tetramino_avibles[5]);
-        print_tetramini('z', player_1.tetramino_avibles[6]);
+        print_tetramini('i', game.players[player_selector].avaiable_tetramini[0]);
+        print_tetramini('j', game.players[player_selector].avaiable_tetramini[1]);
+        print_tetramini('l', game.players[player_selector].avaiable_tetramini[2]);
+        print_tetramini('o', game.players[player_selector].avaiable_tetramini[3]);
+        print_tetramini('s', game.players[player_selector].avaiable_tetramini[4]);
+        print_tetramini('t', game.players[player_selector].avaiable_tetramini[5]);
+        print_tetramini('z', game.players[player_selector].avaiable_tetramini[6]);
 
         printf("\n\n------------ GAME FIELD: ------------\n\n");
         /* SELEZIONE TETRAMINO    */
@@ -65,12 +64,14 @@ int main() {
             printf("\nSeleziona la colonna dove posizionare il tetramino (inserisci un numero tra 0 e 9): ");
             scanf(" %d", &colonna);
             if (exception_t_r(type_selection, rotation_selection) == 0) {
-                da_inserire = edit_tetramino(type_selection, rotation_selection, &player_1);
-                if (exception_width(&da_inserire, colonna) == 0) {
-                    addTetramino(&da_inserire, player_1.field, colonna);
-                    break;
-                }
-            }
+
+                    if (getLastTetramino(&da_inserire, type_selection, &game.players[player_selector]) != 0) {
+                        da_inserire = edit_tetramino(type_selection, rotation_selection,&game.players[player_selector]);
+                        if (exception_width(&da_inserire, colonna) == 0){
+                            addTetramino(&da_inserire, game.players[player_selector].field, colonna);
+                        }
+                        break;
+                    }
 
         }
         /* todo creare una struct giocatore e fare in modo che abbia come attributi il punteggio e il "proprio campo da gioco"
@@ -82,15 +83,12 @@ int main() {
 
 
 
-
-        giallo++;
-
-
+        player_selector=changePlayer(game_type, player_selector);
     }
+    printf("\ndio\ncaneboiamerda onto \t madonna quella troia puttana");
 
 
     return 0;
-
 }
 
 

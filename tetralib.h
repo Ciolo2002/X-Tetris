@@ -75,7 +75,8 @@ const int Z[4][4] = {
 typedef struct player {
     unsigned int points;
     int field[HEIGHT][WIDTH];
-    int tetramino_avibles[TETRAMINO_TYPES];
+    int avaiable_tetramini[TETRAMINO_TYPES];
+
 
 
 } player_t;
@@ -94,10 +95,10 @@ typedef struct tetramino {
  * in particolare setta la quantità di tetramini a disposizione per tipo.
  * @param player
  */
-void player_initzializer(player_t * player){
+void player_initializer(player_t * player){
     int i=0;
     for(i=0;i<TETRAMINO_TYPES;i++){
-        player->tetramino_avibles[i]=n_tetramini_per_type;
+        player->avaiable_tetramini[i]=n_tetramini_per_type;
     }
 }
 
@@ -369,67 +370,67 @@ int getLastTetramino(tetramino_t *da_inserire, char type, player_t * player) {
     int isOkay = 1;
     switch (type) {
         case 'i':
-            if (player->tetramino_avibles[0] <= 0) {
+            if (player->avaiable_tetramini[0] <= 0) {
                 printf("\nI tetramini a disposizione di tipo %c sono finiti\n", type);
                 isOkay = 0;
                 break;
             }
             copyTetramino(da_inserire, I);
-            --player->tetramino_avibles[0];
+            --player->avaiable_tetramini[0];
             break;
         case 'j':
-            if (player->tetramino_avibles[1] <= 0) {
+            if (player->avaiable_tetramini[1] <= 0) {
                 printf("\nI tetramini a disposizione di tipo %c sono finiti\n", type);
                 isOkay = 0;
                 break;
             }
             copyTetramino(da_inserire, J);
-            --player->tetramino_avibles[1];
+            --player->avaiable_tetramini[1];
             break;
         case 'l':
-            if (player->tetramino_avibles[2] <= 0) {
+            if (player->avaiable_tetramini[2] <= 0) {
                 printf("\nI tetramini a disposizione di tipo %c sono finiti\n", type);
                 isOkay = 0;
                 break;
             }
             copyTetramino(da_inserire, L);
-            --player->tetramino_avibles[2];
+            --player->avaiable_tetramini[2];
             break;
         case 'o':
-            if (player->tetramino_avibles[3] <= 0) {
+            if (player->avaiable_tetramini[3] <= 0) {
                 printf("\nI tetramini a disposizione di tipo %c sono finiti\n", type);
                 isOkay = 0;
                 break;
             }
             copyTetramino(da_inserire, O);
-            --player->tetramino_avibles[3];
+            --player->avaiable_tetramini[3];
             break;
         case 's':
-            if (player->tetramino_avibles[4] <= 0) {
+            if (player->avaiable_tetramini[4] <= 0) {
                 printf("\nI tetramini a disposizione di tipo %c sono finiti\n", type);
                 isOkay = 0;
                 break;
             }
             copyTetramino(da_inserire, S);
-            --player->tetramino_avibles[4];
+            --player->avaiable_tetramini[4];
             break;
         case 't':
-            if (player->tetramino_avibles[5] <= 0) {
+            if (player->avaiable_tetramini[5] <= 0) {
                 printf("\nI tetramini a disposizione di tipo %c sono finiti\n", type);
                 isOkay = 0;
                 break;
             }
             copyTetramino(da_inserire, T);
-            --player->tetramino_avibles[5];
+            --player->avaiable_tetramini[5];
             break;
         case 'z':
-            if (player->tetramino_avibles[6] <= 0) {
+            if (player->avaiable_tetramini[6] <= 0) {
                 printf("\nI tetramini a disposizione di tipo %c sono finiti\n", type);
                 isOkay = 0;
                 break;
             }
             copyTetramino(da_inserire, Z);
-            --player->tetramino_avibles[6];
+            --player->avaiable_tetramini[6];
             break;
         default:
             printf("Rotto");
@@ -443,14 +444,8 @@ int getLastTetramino(tetramino_t *da_inserire, char type, player_t * player) {
  * Funzione che crea effettivamente il tetramino e decrementa la quantità di tetramini a disposizione
  */
 tetramino_t edit_tetramino(char type, int rotation, player_t * player) {
-    int isOkay = 0;
     tetramino_t da_inserire;
 
-    isOkay = getLastTetramino(&da_inserire, type, player);
-
-    if (isOkay == 0) {
-        exit(0);
-    }
     da_inserire.type = type;
     da_inserire.rotation = rotation;
     da_inserire = rotateTetramino(da_inserire);
