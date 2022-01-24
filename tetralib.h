@@ -181,7 +181,7 @@ int deleteRows(int campo[HEIGHT][WIDTH]) {
             for (j = WIDTH - 1; j >= 0; j--) {
                 campo[i][j] = 0;
             }
-            pushFieldDown(campo, i); /* FA IN MODO CHE IL RESTO DI MATRICE DEL CAMPO VENGA SPOSTATA IN BASSO */
+            pushFieldDown(campo, j); /* FA IN MODO CHE IL RESTO DI MATRICE DEL CAMPO VENGA SPOSTATA IN BASSO */
             i = HEIGHT - 1; /* nel caso in cui ci sia stata una riga eliminata, la matrice è cambiata e quindi devo ripetere il controllo dall'inizio!!!! */
             ++deleted_rows;
         }
