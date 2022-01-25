@@ -159,14 +159,15 @@ void player_initializer(player_t * player){
  * @param campo
  * @param col
  */
-void pushFieldDown(int campo[HEIGHT][WIDTH], int col) {
+void pushFieldDown(int  campo[HEIGHT][WIDTH], int col) {
     int temp[WIDTH] = {0};
     int i = 0;
-    for (col; col > 0; col--) {
+    int col_tmp;
+    for (col_tmp = col; col_tmp > 0; col_tmp--) {
         for (i = 0; i < WIDTH; i++) {
-            temp[i] = campo[col][i];
-            campo[col][i] = campo[col - 1][i];
-            campo[col - 1][i] = temp[i];
+            temp[i] = campo[col_tmp][i];
+            campo[col_tmp][i] = campo[col_tmp - 1][i];
+            campo[col_tmp - 1][i] = temp[i];
         }
     }
 
@@ -181,18 +182,18 @@ void pushFieldDown(int campo[HEIGHT][WIDTH], int col) {
 int deleteRows(int campo[HEIGHT][WIDTH]) {
     int i, j, fullRow = 1, deleted_rows=0;
 
-    for (i = HEIGHT - 1; i >= 0; i--) {
+    for (i = HEIGHT - 1; i > 0; --i) {
         fullRow = 1;
-        for (j = WIDTH - 1; j >= 0; j--) { /** ciclo di controllo, se la riga è completamente piena*/
+        for (j = WIDTH - 1; j >= 0; --j) { /** ciclo di controllo, se la riga è completamente piena*/
             if (campo[i][j] == 0) {
                 fullRow = 0;
             }
         }
         if (fullRow) {
-            for (j = WIDTH - 1; j >= 0; j--) {
+            for (j = WIDTH - 1; j >= 0; --j) {
                 campo[i][j] = 0;
             }
-            pushFieldDown(campo, j); /* FA IN MODO CHE IL RESTO DI MATRICE DEL CAMPO VENGA SPOSTATA IN BASSO */
+            pushFieldDown(campo, i); /* FA IN MODO CHE IL RESTO DI MATRICE DEL CAMPO VENGA SPOSTATA IN BASSO */
             i = HEIGHT - 1; /* nel caso in cui ci sia stata una riga eliminata, la matrice è cambiata e quindi devo ripetere il controllo dall'inizio!!!! */
             ++deleted_rows;
         }
@@ -523,7 +524,7 @@ tetramino_t edit_tetramino(char type, int rotation, player_t * player, tetramino
  * stampa il campo di gioco
  * @param matrix
  */
-void print_field(int matrix[HEIGHT][WIDTH]) {
+void printField(int matrix[HEIGHT][WIDTH]) {
     int i, j;
 
     printf("\t\t");
@@ -542,6 +543,18 @@ void print_field(int matrix[HEIGHT][WIDTH]) {
                 default:
                     printf("[]\t");
                     break;
+                /*case 2:
+                    break;
+                case 3:
+                    break;
+                case 4:
+                    break;
+                case 5:
+                    break;
+                case 6:
+                    break;
+                case 7:
+                    break;*/
             }
         }
         printf("\n\n");

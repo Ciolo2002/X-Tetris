@@ -72,7 +72,7 @@ int main() {
 
 
 
-        print_field(game.players[player_selector].field);
+        printField(game.players[player_selector].field);
 
         printf("\nSCORE: %d", game.players[player_selector].points);
         printf("\nDELETED ROWS: %d", game.players[player_selector].deleted_rows);
