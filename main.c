@@ -16,13 +16,27 @@ int main() {
     player_t empty_player = {0, {0}, {n_tetramini_per_type}};
     player_initializer(&empty_player);
 
+    printf("    ▄       ▄               ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄ \n");
+    printf("   ▐░▌     ▐░▌             ▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌\n");
+    printf("    ▐░▌   ▐░▌               ▀▀▀▀█░█▀▀▀▀ ▐░█▀▀▀▀▀▀▀▀▀  ▀▀▀▀█░█▀▀▀▀ ▐░█▀▀▀▀▀▀▀█░▌ ▀▀▀▀█░█▀▀▀▀ ▐░█▀▀▀▀▀▀▀▀▀ \n");
+    printf("     ▐░▌ ▐░▌                    ▐░▌     ▐░▌               ▐░▌     ▐░▌       ▐░▌     ▐░▌     ▐░▌          \n");
+    printf("      ▐░▐░▌    ▄▄▄▄▄▄▄▄▄▄▄      ▐░▌     ▐░█▄▄▄▄▄▄▄▄▄      ▐░▌     ▐░█▄▄▄▄▄▄▄█░▌     ▐░▌     ▐░█▄▄▄▄▄▄▄▄▄ \n");
+    printf("       ▐░▌    ▐░░░░░░░░░░░▌     ▐░▌     ▐░░░░░░░░░░░▌     ▐░▌     ▐░░░░░░░░░░░▌     ▐░▌     ▐░░░░░░░░░░░▌\n");
+    printf("      ▐░▌░▌    ▀▀▀▀▀▀▀▀▀▀▀      ▐░▌     ▐░█▀▀▀▀▀▀▀▀▀      ▐░▌     ▐░█▀▀▀▀█░█▀▀      ▐░▌      ▀▀▀▀▀▀▀▀▀█░▌\n");
+    printf("     ▐░▌ ▐░▌                    ▐░▌     ▐░▌               ▐░▌     ▐░▌     ▐░▌       ▐░▌               ▐░▌\n");
+    printf("    ▐░▌   ▐░▌                   ▐░▌     ▐░█▄▄▄▄▄▄▄▄▄      ▐░▌     ▐░▌      ▐░▌  ▄▄▄▄█░█▄▄▄▄  ▄▄▄▄▄▄▄▄▄█░▌\n");
+    printf("   ▐░▌     ▐░▌                  ▐░▌     ▐░░░░░░░░░░░▌     ▐░▌     ▐░▌       ▐░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌\n");
+    printf("    ▀       ▀                    ▀       ▀▀▀▀▀▀▀▀▀▀▀       ▀       ▀         ▀  ▀▀▀▀▀▀▀▀▀▀▀  ▀▀▀▀▀▀▀▀▀▀▀ \n");
+    printf("                                                                                                         \n");
 
-    printf("WELCOME IN X-TETRIS !!!!!! \n Seleziona la modalita' di gioco:"
-           " \n - 1 per giocare in single-player,"
-           " \n - 2 per gioca in multi-player "
-           "\n - 3 per giocare contro CPU\n"); //TODO per il momento per i test facciamo solo 1 e/o 2, quando sarà ora faremo la cpu
+    printf("\n\n\t\t\t\t\t\t\t  SINGLE PLAYER    - press 1"
+           "\n\n\t\t\t\t\t\t\t  TWO PLAYERS      - press 2"
+           "\n\n\t\t\t\t\t\t\t  PLAY AGAINST CPU - press 3\n"); //TODO per il momento per i test facciamo solo 1 e/o 2, quando sarà ora faremo la cpu
 
     scanf(" %d", &game_type);
+    printf("\033[2J");
+
+
 
     if (game_type != 1 && game_type != 2 && game_type != 3) {
         printf(" La modalita' %d arriverà presto!!", game_type);
@@ -61,7 +75,9 @@ int main() {
         print_field(game.players[player_selector].field);
 
         printf("\nSCORE: %d", game.players[player_selector].points);
-        printf("\nDELETED ROWS: %d", cnt_rows_deleted);
+        printf("\nDELETED ROWS: %d", game.players[player_selector].deleted_rows);
+        game.players[player_selector].deleted_rows = 0;
+
 
 
 
@@ -76,15 +92,14 @@ int main() {
                     da_inserire = edit_tetramino(type_selection, rotation_selection, &game.players[player_selector], da_inserire);
                     if (exception_width(&da_inserire, colonna) == 0) {
                         addTetramino(&da_inserire, game.players[player_selector].field, colonna);
-                        cnt_rows_deleted = (deleteRows(game.players[player_selector].field));
-                        if(cnt_rows_deleted!=0){
-                            increment_points(&game.players[player_selector].points, &cnt_rows_deleted);
-                            cnt_rows_deleted=0;
+                        game.players[player_selector].deleted_rows = (deleteRows(game.players[player_selector].field));
+                        if(game.players[player_selector].deleted_rows!=0){
+                            increment_points(&game.players[player_selector].points, &game.players[player_selector].deleted_rows);
                             if(game_type!=1){
                                 if(player_selector==1){
-                                    swapRows(cnt_rows_deleted, &game.players[0]);
+                                    swapRows(game.players[player_selector].deleted_rows, &game.players[0]);
                                 }else{
-                                    swapRows(cnt_rows_deleted, &game.players[1]);
+                                    swapRows(game.players[player_selector].deleted_rows, &game.players[1]);
                                 }
                             }
                         }

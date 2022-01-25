@@ -76,7 +76,7 @@ typedef struct player {
     unsigned int points;
     int field[HEIGHT][WIDTH];
     int avaiable_tetramini[TETRAMINO_TYPES];
-
+    int deleted_rows;
 
 
 } player_t;
@@ -98,7 +98,18 @@ typedef struct game{
 
 
 void swapRows(int deleted_rows, player_t *opponent){
-
+    int i,j;
+    if(deleted_rows >= 3){
+        for(i = HEIGHT-1; i > (HEIGHT-1-deleted_rows); --i){
+            for(j = 0; j < WIDTH; j++){
+                if(opponent->field[i][j] == 0){
+                    opponent->field[i][j] = 1;
+                }else{
+                    opponent->field[i][j] = 0;
+                }
+            }
+        }
+    }
 }
 
 
@@ -619,5 +630,4 @@ void increment_points(unsigned int *result, int *cnt) {
             *result += 12;
             break;
     }
-    *cnt = 0;
 }
