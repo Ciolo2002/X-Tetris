@@ -3,6 +3,11 @@
 #include "tetralib.h"
 
 
+
+/* LISTA DEI BUG:
+ *  1. Se non riesco a posizionare un tetramino perchè vado fuori a (dx, sx) il contatore di quel dato tetramino si decrementa: non deve decrementarsi
+ *  */
+
 int main() {
     int i, j, win = 0, lose = 0, rotation_selection, colonna, giallo = 0, player_selector = 0;
     int ciao = 0;

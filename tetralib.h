@@ -89,22 +89,19 @@ typedef struct tetramino {
 } tetramino_t;
 
 
-
-typedef struct game{
-    player_t * players;
-}game_t;
-
+typedef struct game {
+    player_t *players;
+} game_t;
 
 
-
-void swapRows(int deleted_rows, player_t *opponent){
-    int i,j;
-    if(deleted_rows >= 3){
-        for(i = HEIGHT-1; i > (HEIGHT-1-deleted_rows); --i){
-            for(j = 0; j < WIDTH; j++){
-                if(opponent->field[i][j] == 0){
-                    opponent->field[i][j] = 1;
-                }else{
+void swapRows(int deleted_rows, player_t *opponent) {
+    int i, j;
+    if (deleted_rows >= 3) {
+        for (i = HEIGHT - 1; i > (HEIGHT - 1 - deleted_rows); --i) {
+            for (j = 0; j < WIDTH; j++) {
+                if (opponent->field[i][j] == 0) {
+                    opponent->field[i][j] = 1; /* se vuoi mettere i colori questo 1 può dare probblemi, metti tipo 9 e fai un colore speciale */
+                } else {
                     opponent->field[i][j] = 0;
                 }
             }
@@ -113,24 +110,24 @@ void swapRows(int deleted_rows, player_t *opponent){
 }
 
 
-int changePlayer (int game_type, int  player_selector){
-    if(game_type==1){  /* selettore del giocatore */
-        player_selector=0;
-    }else{
-        if(player_selector==0){
-            player_selector=1;
-        }else{
-            player_selector=0;
+int changePlayer(int game_type, int player_selector) {
+    if (game_type == 1) {  /* selettore del giocatore */
+        player_selector = 0;
+    } else {
+        if (player_selector == 0) {
+            player_selector = 1;
+        } else {
+            player_selector = 0;
         }
     }
     return player_selector;
 }
 
 
-void youLose(player_t * player){
+void youLose(player_t *player) {
     int i;
-    for(i=0;i<TETRAMINO_TYPES;i++){
-        if(player->avaiable_tetramini[i]!=0){
+    for (i = 0; i < TETRAMINO_TYPES; i++) {
+        if (player->avaiable_tetramini[i] != 0) {
             return;
         }
     }
@@ -144,13 +141,12 @@ void youLose(player_t * player){
  * in particolare setta la quantità di tetramini a disposizione per tipo.
  * @param player
  */
-void player_initializer(player_t * player){
-    int i=0;
-    for(i=0;i<TETRAMINO_TYPES;i++){
-        player->avaiable_tetramini[i]=n_tetramini_per_type;
+void player_initializer(player_t *player) {
+    int i = 0;
+    for (i = 0; i < TETRAMINO_TYPES; i++) {
+        player->avaiable_tetramini[i] = n_tetramini_per_type;
     }
 }
-
 
 
 /**
@@ -159,7 +155,7 @@ void player_initializer(player_t * player){
  * @param campo
  * @param col
  */
-void pushFieldDown(int  campo[HEIGHT][WIDTH], int col) {
+void pushFieldDown(int campo[HEIGHT][WIDTH], int col) {
     int temp[WIDTH] = {0};
     int i = 0;
     int col_tmp;
@@ -180,21 +176,21 @@ void pushFieldDown(int  campo[HEIGHT][WIDTH], int col) {
  * @return  Il numero di righe che sono state eliminate, utile per calcolare il punteggio.
  */
 int deleteRows(int campo[HEIGHT][WIDTH]) {
-    int i, j, fullRow = 1, deleted_rows=0;
+    int i, j, fullRow = 1, deleted_rows = 0;
 
-    for (i = HEIGHT - 1; i > 0; --i) {
+    for (i = HEIGHT ; i >= 0; i--) {
         fullRow = 1;
-        for (j = WIDTH - 1; j >= 0; --j) { /** ciclo di controllo, se la riga è completamente piena*/
+        for (j = WIDTH - 1; j >= 0; j--) { /** ciclo di controllo, se la riga è completamente piena*/
             if (campo[i][j] == 0) {
                 fullRow = 0;
             }
         }
         if (fullRow) {
-            for (j = WIDTH - 1; j >= 0; --j) {
+            for (j = WIDTH - 1; j >= 0; j--) {
                 campo[i][j] = 0;
             }
             pushFieldDown(campo, i); /* FA IN MODO CHE IL RESTO DI MATRICE DEL CAMPO VENGA SPOSTATA IN BASSO */
-            i = HEIGHT - 1; /* nel caso in cui ci sia stata una riga eliminata, la matrice è cambiata e quindi devo ripetere il controllo dall'inizio!!!! */
+            i = HEIGHT ; /* nel caso in cui ci sia stata una riga eliminata, la matrice è cambiata e quindi devo ripetere il controllo dall'inizio!!!! */
             ++deleted_rows;
         }
     }
@@ -211,6 +207,7 @@ int deleteRows(int campo[HEIGHT][WIDTH]) {
  */
 void place_tetramino(int pField[HEIGHT][WIDTH], tetramino_t *pTetramino, int colonna, int riga) {
     int i, j, bool_placed = 0;
+    printf("RICDW %d", riga);
     for (i = TETRAMINO_LATO - 1; i >= 0; i--) {
         for (j = TETRAMINO_LATO - 1; j >= 0; j--) {
             if (pTetramino->pieces[i][j] != 0) {
@@ -220,6 +217,13 @@ void place_tetramino(int pField[HEIGHT][WIDTH], tetramino_t *pTetramino, int col
         }
         if (bool_placed) { /** posizionamento della riga superiore del campo da gioco*/
             riga--;
+            if(riga<0){
+                /** il giocatore ha sforato in altezza il campo da gioco quindi ha perso*/
+                printf("Sei arrivato in alto hai perso!!!");
+                exit(0);
+            }
+            printf("Riga %d \n",  riga);
+
         }
         bool_placed = 0;
     }
@@ -232,7 +236,7 @@ void place_tetramino(int pField[HEIGHT][WIDTH], tetramino_t *pTetramino, int col
  * @param pTetramino
  * @return
  */
-int maxTetraminoWidth(tetramino_t *pTetramino){
+int maxTetraminoWidth(tetramino_t *pTetramino) {
     int max_tetramino_width = 0, i, j, j_record = -1;
     for (j = 0; j < TETRAMINO_LATO; j++) {
         for (i = 0; i < TETRAMINO_LATO; i++) {
@@ -244,7 +248,6 @@ int maxTetraminoWidth(tetramino_t *pTetramino){
             }
         }
     }
-
 
 
     return max_tetramino_width;
@@ -264,31 +267,26 @@ void addTetramino(tetramino_t *da_inserire, int field[HEIGHT][WIDTH], int col) {
     int i, j, z, temp = -1, calcomagicoastrale = 0;
 
 
-    for (i = HEIGHT - 1; i >= 0; i--) { /*riga campo da gioco*/
+    for (i = 0; i < HEIGHT; i++) { /*riga campo da gioco*/
         temp = -1;
         for (j = TETRAMINO_LATO - 1; j >= 0; j--) { /*riga tetramino*/
             for (z = TETRAMINO_LATO - 1; z >= 0; z--) { /*colonna tetramino*/
                 calcomagicoastrale = (i - ((TETRAMINO_LATO - 1) - j));
-                if (field[calcomagicoastrale][z + col] == 0 || da_inserire->pieces[j][z] ==   0) {  /** controllo che l'intero tetramino ci sta all'interno del campo di gioco, se non ci sta controllo la riga superiore del campo da gioco */
-                } else {
-                    temp = i;
+                if(calcomagicoastrale>=0){
+                    if ((field[calcomagicoastrale][z + col] == 0 || da_inserire->pieces[j][z] == 0)) {  /** controllo che l'intero tetramino ci sta all'interno del campo di gioco, se non ci sta controllo la riga superiore del campo da gioco */
+                    } else {
+                        temp = i;
+                    }
                 }
-
-
-                if (calcomagicoastrale <
-                    0) { /* TODO: controllare che la riga 0 sia consentita, il giocatore deve perdere dalla -1 in su */
-                    /** il giocatore ha sforato in altezza il campo da gioco quindi ha perso*/
-                    printf("Sei arrivato in alto hai perso!!!");
-                    exit(0);
                 }
             }
-        }
-        if (temp == -1) { /** una volta trovata la riga dove posizionare il tetramino, lo vado effettivamente ad inserire nel campo da gioco*/
-            place_tetramino(field, da_inserire, col, i);
+
+        if (temp != -1) { /** una volta trovata la riga dove posizionare il tetramino, lo vado effettivamente ad inserire nel campo da gioco*/
+            place_tetramino(field, da_inserire, col, i-1);
             return;
         }
     }
-    place_tetramino(field, da_inserire, col, i);
+    place_tetramino(field, da_inserire, col, i-1);
     return;
 
 }
@@ -369,7 +367,6 @@ int checkEmptyLeftColumn(tetramino_t tetramino) {
 }
 
 
-
 /**
  * stampa l'effettivo tetramino, si può usare anche solo per fare i test e poi per giocare usariamo l'altra print che è più carina.
  * @param tetramino
@@ -389,7 +386,6 @@ tetramino_t rotateTetramino(tetramino_t tetramino1) {
     tetramino_t temp = tetramino1;
     int i, j;
     int rotation = tetramino1.rotation;
-
 
 
     if (tetramino1.type == 'o' || tetramino1.rotation == 1) {
@@ -426,7 +422,7 @@ void copyTetramino(tetramino_t *copy, const int source[TETRAMINO_LATO][TETRAMINO
     }
 }
 
-int getLastTetramino(tetramino_t *da_inserire, char type, player_t * player) {
+int getLastTetramino(tetramino_t *da_inserire, char type, player_t *player) {
     int isOkay = 1;
     switch (type) {
         case 'i':
@@ -503,13 +499,14 @@ int getLastTetramino(tetramino_t *da_inserire, char type, player_t * player) {
 /**
  * Funzione che crea effettivamente il tetramino e decrementa la quantità di tetramini a disposizione
  */
-tetramino_t edit_tetramino(char type, int rotation, player_t * player, tetramino_t da_inserire) {
+tetramino_t edit_tetramino(char type, int rotation, player_t *player, tetramino_t da_inserire) {
     da_inserire.type = type;
     da_inserire.rotation = rotation;
     da_inserire = rotateTetramino(da_inserire);
 
 
-    while (checkEmptyLastRow( da_inserire)) { /*finchè l'ultima la più in basso della matrice è fatta di soli 0 porto il tetramino in basso*/
+    while (checkEmptyLastRow(
+            da_inserire)) { /*finchè l'ultima la più in basso della matrice è fatta di soli 0 porto il tetramino in basso*/
         da_inserire = pushTetraminoDown(da_inserire);
     }
 
@@ -543,18 +540,18 @@ void printField(int matrix[HEIGHT][WIDTH]) {
                 default:
                     printf("[]\t");
                     break;
-                /*case 2:
-                    break;
-                case 3:
-                    break;
-                case 4:
-                    break;
-                case 5:
-                    break;
-                case 6:
-                    break;
-                case 7:
-                    break;*/
+                    /*case 2:
+                        break;
+                    case 3:
+                        break;
+                    case 4:
+                        break;
+                    case 5:
+                        break;
+                    case 6:
+                        break;
+                    case 7:
+                        break;*/
             }
         }
         printf("\n\n");
@@ -631,7 +628,7 @@ int exception_width(tetramino_t *da_inserire, int col) {
 void increment_points(unsigned int *result, int *cnt) {
     switch (*cnt) {
         case 1:
-            *result+=1;
+            *result += 1;
             break;
         case 2:
             *result += 3;
