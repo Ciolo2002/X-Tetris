@@ -4,8 +4,8 @@
 
 
 /* LISTA DEI BUG/COSE DA FARE:
- *  1. Se non riesco a posizionare un tetramino perchè vado fuori a (dx, sx) il contatore di quel dato tetramino si decrementa: non deve decrementarsi
- *  2. testare il funzionamento della vittoria grazie ai punti
+ *  1. Se non riesco a posizionare un tetramino perchè vado fuori a (dx, sx) il contatore di quel dato tetramino si decrementa: non deve decrementarsi FATTO MA MALE
+ *  2. testare il funzionamento della vittoria grazie ai punti EDIT: FUNZIONA
  *  3.  abbellire le stampe del campo
  *  4. mettere in una funzione quello che che trovi tra ////////////////// e fare anche un altra funnzione per la stampa del logo
  *  5. sistemare la documentazione secondo gli standard Doxygen (Spanò ha scritto una mail a riguardo dove indica dove andare a vedere come si fa a commentare )
@@ -18,7 +18,7 @@
 
 int main() {
     int i, j, win = 0, lose = 0, rotation_selection, colonna, player_selector = 0;
-    int looser = 0;
+    int loser = 0;
     int cnt_rows_deleted = 0;
     int *avaiable_tetramini;
     tetramino_t da_inserire = {0, 0, {0}};
@@ -29,19 +29,7 @@ int main() {
 
     player_t empty_player = {0, {0},0};
 
-
-    printf("    ▄       ▄               ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄ \n");
-    printf("   ▐░▌     ▐░▌             ▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌\n");
-    printf("    ▐░▌   ▐░▌               ▀▀▀▀█░█▀▀▀▀ ▐░█▀▀▀▀▀▀▀▀▀  ▀▀▀▀█░█▀▀▀▀ ▐░█▀▀▀▀▀▀▀█░▌ ▀▀▀▀█░█▀▀▀▀ ▐░█▀▀▀▀▀▀▀▀▀ \n");
-    printf("     ▐░▌ ▐░▌                    ▐░▌     ▐░▌               ▐░▌     ▐░▌       ▐░▌     ▐░▌     ▐░▌          \n");
-    printf("      ▐░▐░▌    ▄▄▄▄▄▄▄▄▄▄▄      ▐░▌     ▐░█▄▄▄▄▄▄▄▄▄      ▐░▌     ▐░█▄▄▄▄▄▄▄█░▌     ▐░▌     ▐░█▄▄▄▄▄▄▄▄▄ \n");
-    printf("       ▐░▌    ▐░░░░░░░░░░░▌     ▐░▌     ▐░░░░░░░░░░░▌     ▐░▌     ▐░░░░░░░░░░░▌     ▐░▌     ▐░░░░░░░░░░░▌\n");
-    printf("      ▐░▌░▌    ▀▀▀▀▀▀▀▀▀▀▀      ▐░▌     ▐░█▀▀▀▀▀▀▀▀▀      ▐░▌     ▐░█▀▀▀▀█░█▀▀      ▐░▌      ▀▀▀▀▀▀▀▀▀█░▌\n");
-    printf("     ▐░▌ ▐░▌                    ▐░▌     ▐░▌               ▐░▌     ▐░▌     ▐░▌       ▐░▌               ▐░▌\n");
-    printf("    ▐░▌   ▐░▌                   ▐░▌     ▐░█▄▄▄▄▄▄▄▄▄      ▐░▌     ▐░▌      ▐░▌  ▄▄▄▄█░█▄▄▄▄  ▄▄▄▄▄▄▄▄▄█░▌\n");
-    printf("   ▐░▌     ▐░▌                  ▐░▌     ▐░░░░░░░░░░░▌     ▐░▌     ▐░▌       ▐░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌\n");
-    printf("    ▀       ▀                    ▀       ▀▀▀▀▀▀▀▀▀▀▀       ▀       ▀         ▀  ▀▀▀▀▀▀▀▀▀▀▀  ▀▀▀▀▀▀▀▀▀▀▀ \n");
-    printf("                                                                                                         \n");
+    printLogo();
 
     printf("\n\n\t\t\t\t\t\t\t  SINGLE PLAYER    - press 1"
            "\n\n\t\t\t\t\t\t\t  TWO PLAYERS      - press 2"
@@ -98,8 +86,8 @@ int main() {
 
 
         /////////////////////////////
-        looser = youLose(&game.players[player_selector],avaiable_tetramini);
-        if (looser == 0) {
+        loser = youLose(&game.players[player_selector], avaiable_tetramini);
+        if (loser == 0) {
 
             if (game_type != 1) {
                 if (game.players[0].points == game.players[1].points) {
@@ -150,7 +138,7 @@ int main() {
             if (getLastTetramino(&da_inserire, type_selection, &game.players[player_selector],avaiable_tetramini) != 0) {
                 da_inserire = edit_tetramino(type_selection, rotation_selection, &game.players[player_selector],
                                              da_inserire);
-                if (exception_width(&da_inserire, colonna) == 0) {
+                if (exception_width(&da_inserire, colonna, avaiable_tetramini) == 0) {
                     addTetramino(&da_inserire, game.players[player_selector].field, colonna);
                     game.players[player_selector].deleted_rows = (deleteRows(game.players[player_selector].field));
                     if (game.players[player_selector].deleted_rows != 0) {
@@ -168,6 +156,7 @@ int main() {
                 }
             }
 
+            game.players[0].points= 5;
 
             /* creare una struct giocatore e fare in modo che abbia come attributi il punteggio e il "proprio campo da gioco"
               questo perchè dobbiamo tenere conto dei punti e oltretutto ci sono due giocatori che hanno due campi da gioco distinti */

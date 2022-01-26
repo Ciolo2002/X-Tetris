@@ -1,8 +1,18 @@
 #define  WIDTH 10
 #define  HEIGHT  15
-#define  n_tetramini_per_type 20
+#define  n_tetramini_per_type 1
 #define TETRAMINO_LATO  4
 #define TETRAMINO_TYPES 7
+
+/*COLORI*/
+#define ANSI_COLOR_RED     "\x1b[31m"
+#define ANSI_COLOR_GREEN   "\x1b[32m"
+#define ANSI_COLOR_YELLOW  "\x1b[93m"
+#define ANSI_COLOR_BLUE    "\e[44m"
+#define ANSI_COLOR_MAGENTA "\x1b[35m"
+#define ANSI_COLOR_CYAN    "\x1b[36m"
+#define ANSI_COLOR_ORANGE  "\x1b[33m"
+#define ANSI_COLOR_RESET   "\x1b[0m"
 
 /**
  * Variabili deprecate siccome ora si trovano all'interno
@@ -93,7 +103,22 @@ typedef struct game {
 } game_t;
 
 
+void printLogo(){
 
+
+    printf("    ▄       ▄               ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄ \n");
+    printf("   ▐░▌     ▐░▌             ▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌\n");
+    printf("    ▐░▌   ▐░▌               ▀▀▀▀█░█▀▀▀▀ ▐░█▀▀▀▀▀▀▀▀▀  ▀▀▀▀█░█▀▀▀▀ ▐░█▀▀▀▀▀▀▀█░▌ ▀▀▀▀█░█▀▀▀▀ ▐░█▀▀▀▀▀▀▀▀▀ \n");
+    printf("     ▐░▌ ▐░▌                    ▐░▌     ▐░▌               ▐░▌     ▐░▌       ▐░▌     ▐░▌     ▐░▌          \n");
+    printf("      ▐░▐░▌    ▄▄▄▄▄▄▄▄▄▄▄      ▐░▌     ▐░█▄▄▄▄▄▄▄▄▄      ▐░▌     ▐░█▄▄▄▄▄▄▄█░▌     ▐░▌     ▐░█▄▄▄▄▄▄▄▄▄ \n");
+    printf("       ▐░▌    ▐░░░░░░░░░░░▌     ▐░▌     ▐░░░░░░░░░░░▌     ▐░▌     ▐░░░░░░░░░░░▌     ▐░▌     ▐░░░░░░░░░░░▌\n");
+    printf("      ▐░▌░▌    ▀▀▀▀▀▀▀▀▀▀▀      ▐░▌     ▐░█▀▀▀▀▀▀▀▀▀      ▐░▌     ▐░█▀▀▀▀█░█▀▀      ▐░▌      ▀▀▀▀▀▀▀▀▀█░▌\n");
+    printf("     ▐░▌ ▐░▌                    ▐░▌     ▐░▌               ▐░▌     ▐░▌     ▐░▌       ▐░▌               ▐░▌\n");
+    printf("    ▐░▌   ▐░▌                   ▐░▌     ▐░█▄▄▄▄▄▄▄▄▄      ▐░▌     ▐░▌      ▐░▌  ▄▄▄▄█░█▄▄▄▄  ▄▄▄▄▄▄▄▄▄█░▌\n");
+    printf("   ▐░▌     ▐░▌                  ▐░▌     ▐░░░░░░░░░░░▌     ▐░▌     ▐░▌       ▐░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌\n");
+    printf("    ▀       ▀                    ▀       ▀▀▀▀▀▀▀▀▀▀▀       ▀       ▀         ▀  ▀▀▀▀▀▀▀▀▀▀▀  ▀▀▀▀▀▀▀▀▀▀▀ \n");
+    printf("                                                                                                         \n");
+}
 
 
 void swapRows(int deleted_rows, player_t *opponent) {
@@ -529,21 +554,27 @@ void printField(int matrix[HEIGHT][WIDTH]) {
                 case 0:
                     printf("x\t");
                     break;
-                default:
-                    printf("[]\t");
+                case 1:
+                    printf(ANSI_COLOR_CYAN    "[]\t"     ANSI_COLOR_RESET );
                     break;
-                    /*case 2:
-                        break;
-                    case 3:
-                        break;
-                    case 4:
-                        break;
-                    case 5:
-                        break;
-                    case 6:
-                        break;
-                    case 7:
-                        break;*/
+                case 2:
+                    printf(ANSI_COLOR_BLUE     "[]\t"     ANSI_COLOR_RESET );
+                    break;
+                case 3:
+                    printf(ANSI_COLOR_ORANGE     "[]\t"     ANSI_COLOR_RESET );
+                    break;
+                case 4:
+                    printf(ANSI_COLOR_YELLOW    "[]\t"     ANSI_COLOR_RESET );
+                    break;
+                case 5:
+                    printf(ANSI_COLOR_GREEN     "[]\t"     ANSI_COLOR_RESET );
+                    break;
+                case 6:
+                    printf(ANSI_COLOR_MAGENTA     "[]\t"     ANSI_COLOR_RESET );
+                    break;
+                case 7:
+                    printf(ANSI_COLOR_RED     "[]\t"     ANSI_COLOR_RESET );
+                    break;
             }
         }
         printf("\n\n");
@@ -607,11 +638,47 @@ int exception_t_r(char type, int rotation) {
     return 0;
 }
 
-int exception_width(tetramino_t *da_inserire, int col) {
+
+/**
+ *
+ * @param da_inserire
+ * @param col
+ * @param avaiable_tetramini
+ * @return
+ *
+ * la funzione gestisce l'errore in caso un tetramino venga posizionato al di fuori del campo a destra o a sinistra,
+ * inoltre incrementa la quantità di tetramini a disposizione per il tipo indicato, dato che verrebbe decrementata senza posizionare nessun tetramino
+ */
+int exception_width(tetramino_t * da_inserire, int col, int * avaiable_tetramini) {
     int lunghezza_max_tetramino;
     lunghezza_max_tetramino = maxTetraminoWidth(da_inserire);
     if ((col + lunghezza_max_tetramino) > WIDTH || (col + lunghezza_max_tetramino) <= 0) {
-        printf("Non puoi posizione un tetramino fuori dal campo di gioco!!!");
+        printf("\nNon puoi posizione un tetramino fuori dal campo di gioco.\n");
+
+        switch(da_inserire->type){
+            case 'i':
+                ++avaiable_tetramini[0];
+                break;
+            case 'j':
+                ++avaiable_tetramini[1];
+                break;
+            case 'l':
+                ++avaiable_tetramini[2];
+                break;
+            case 'o':
+                ++avaiable_tetramini[3];
+                break;
+            case 's':
+                ++avaiable_tetramini[4];
+                break;
+            case 't':
+                ++avaiable_tetramini[5];
+                break;
+            case 'z':
+                ++avaiable_tetramini[6];
+                break;
+        }
+
         return 1;
     }
     return 0;
