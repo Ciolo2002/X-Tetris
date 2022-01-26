@@ -1,17 +1,18 @@
 #define  WIDTH 10
 #define  HEIGHT  15
-#define  n_tetramini_per_type 1
+#define  n_tetramini_per_type 20
 #define TETRAMINO_LATO  4
 #define TETRAMINO_TYPES 7
 
 /*COLORI*/
-#define ANSI_COLOR_RED     "\x1b[31m"
-#define ANSI_COLOR_GREEN   "\x1b[32m"
-#define ANSI_COLOR_YELLOW  "\x1b[93m"
-#define ANSI_COLOR_BLUE    "\e[44m"
-#define ANSI_COLOR_MAGENTA "\x1b[35m"
-#define ANSI_COLOR_CYAN    "\x1b[36m"
-#define ANSI_COLOR_ORANGE  "\x1b[33m"
+#define ANSI_COLOR_RED     "\e[0;101m"
+#define ANSI_COLOR_GREEN   "\e[0;102m"
+#define ANSI_COLOR_YELLOW  "\e[0;103m"
+#define ANSI_COLOR_BLUE    "\e[0;104m"
+#define ANSI_COLOR_MAGENTA "\e[0;105m"
+#define ANSI_COLOR_CYAN    "\e[0;106m"
+#define ANSI_COLOR_WHITE   "\e[43m"
+#define ANSI_COLOR_BLACK   "\e[40m"
 #define ANSI_COLOR_RESET   "\x1b[0m"
 
 /**
@@ -105,21 +106,61 @@ typedef struct game {
 
 void printLogo(){
 
+ printf("    ██╗  ██╗  ████████╗███████╗████████╗██████╗ ██╗███████╗ \n");
+ printf("    ╚██╗██╔╝  ╚══██╔══╝██╔════╝╚══██╔══╝██╔══██╗██║██╔════╝ \n");
+ printf("     ╚███╔╝█████╗██║   █████╗     ██║   ██████╔╝██║███████╗ \n");
+ printf("     ██╔██╗╚════╝██║   ██╔══╝     ██║   ██╔══██╗██║╚════██║ \n");
+ printf("    ██╔╝ ██╗     ██║   ███████╗   ██║   ██║  ██║██║███████║ \n");
+ printf("    ╚═╝  ╚═╝     ╚═╝   ╚══════╝   ╚═╝   ╚═╝  ╚═╝╚═╝╚══════╝ \n");
 
-    printf("    ▄       ▄               ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄ \n");
-    printf("   ▐░▌     ▐░▌             ▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌\n");
-    printf("    ▐░▌   ▐░▌               ▀▀▀▀█░█▀▀▀▀ ▐░█▀▀▀▀▀▀▀▀▀  ▀▀▀▀█░█▀▀▀▀ ▐░█▀▀▀▀▀▀▀█░▌ ▀▀▀▀█░█▀▀▀▀ ▐░█▀▀▀▀▀▀▀▀▀ \n");
-    printf("     ▐░▌ ▐░▌                    ▐░▌     ▐░▌               ▐░▌     ▐░▌       ▐░▌     ▐░▌     ▐░▌          \n");
-    printf("      ▐░▐░▌    ▄▄▄▄▄▄▄▄▄▄▄      ▐░▌     ▐░█▄▄▄▄▄▄▄▄▄      ▐░▌     ▐░█▄▄▄▄▄▄▄█░▌     ▐░▌     ▐░█▄▄▄▄▄▄▄▄▄ \n");
-    printf("       ▐░▌    ▐░░░░░░░░░░░▌     ▐░▌     ▐░░░░░░░░░░░▌     ▐░▌     ▐░░░░░░░░░░░▌     ▐░▌     ▐░░░░░░░░░░░▌\n");
-    printf("      ▐░▌░▌    ▀▀▀▀▀▀▀▀▀▀▀      ▐░▌     ▐░█▀▀▀▀▀▀▀▀▀      ▐░▌     ▐░█▀▀▀▀█░█▀▀      ▐░▌      ▀▀▀▀▀▀▀▀▀█░▌\n");
-    printf("     ▐░▌ ▐░▌                    ▐░▌     ▐░▌               ▐░▌     ▐░▌     ▐░▌       ▐░▌               ▐░▌\n");
-    printf("    ▐░▌   ▐░▌                   ▐░▌     ▐░█▄▄▄▄▄▄▄▄▄      ▐░▌     ▐░▌      ▐░▌  ▄▄▄▄█░█▄▄▄▄  ▄▄▄▄▄▄▄▄▄█░▌\n");
-    printf("   ▐░▌     ▐░▌                  ▐░▌     ▐░░░░░░░░░░░▌     ▐░▌     ▐░▌       ▐░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌\n");
-    printf("    ▀       ▀                    ▀       ▀▀▀▀▀▀▀▀▀▀▀       ▀       ▀         ▀  ▀▀▀▀▀▀▀▀▀▀▀  ▀▀▀▀▀▀▀▀▀▀▀ \n");
-    printf("                                                                                                         \n");
 }
 
+
+
+char randomType(){
+    srand(time(NULL));
+    int r= rand() % 8 - 1;
+    char type;
+    switch(r){
+        case 0:
+            type = 'i';
+            break;
+        case 1:
+            type = 'j';
+            break;
+        case 2:
+            type = 'l';
+            break;
+        case 3:
+            type = 'o';
+            break;
+        case 4:
+            type = 's';
+            break;
+        case 5:
+            type = 't';
+            break;
+        case 6:
+            type = 'z';
+            break;
+        default:
+            type = ' ';
+            break;
+    }
+    return type;
+}
+
+int randomRotation(){
+    srand(time(NULL));
+    int r = rand() % 4 + 1;
+    return r;
+}
+
+int randomColumn(){
+    srand(time(NULL));
+    int r = rand() % 10;
+    return r;
+}
 
 void swapRows(int deleted_rows, player_t *opponent) {
     int i, j;
@@ -167,7 +208,25 @@ int youLose(player_t *player, int *avaiable_tetramini) {
 }
 
 
+int checkLose( game_t game, int player_selector, int * avaiable_tetramini, int game_type){
+    int loser = 0;
+    loser = youLose(&game.players[player_selector], avaiable_tetramini);
+    if (loser == 0) {
 
+        if (game_type != 1) {
+            if (game.players[0].points == game.players[1].points) {
+                printf("\nPareggio");
+            } else if (game.players[0].points > game.players[1].points) {
+                printf("\nHa vinto il giocatore 1");
+            } else {
+                printf("\nHa vinto il giocatore 2");
+            }
+        }
+        free(game.players);
+        return 1;
+    }
+    return 0;
+}
 
 
 /**
@@ -541,48 +600,45 @@ tetramino_t edit_tetramino(char type, int rotation, player_t *player, tetramino_
 void printField(int matrix[HEIGHT][WIDTH]) {
     int i, j;
 
-    printf("\t\t");
-    for (i = 0; i < WIDTH; i++) {
-        printf("%d\t", i);
-    }
-    printf("\n\n\n");
+
+    printf("\n");
 
     for (i = 0; i < HEIGHT; ++i) {
-        printf("%d\t\t", i);
+        printf("\t\t\t%d\t", i);
         for (j = 0; j < WIDTH; j++) {
             switch (matrix[i][j]) {
                 case 0:
-                    printf("x\t");
+                    printf(ANSI_COLOR_BLACK   "   "     ANSI_COLOR_RESET);
                     break;
                 case 1:
-                    printf(ANSI_COLOR_CYAN    "[]\t"     ANSI_COLOR_RESET );
+                    printf(ANSI_COLOR_CYAN    "   "     ANSI_COLOR_RESET );
                     break;
                 case 2:
-                    printf(ANSI_COLOR_BLUE     "[]\t"     ANSI_COLOR_RESET );
+                    printf(ANSI_COLOR_BLUE     "   "     ANSI_COLOR_RESET );
                     break;
                 case 3:
-                    printf(ANSI_COLOR_ORANGE     "[]\t"     ANSI_COLOR_RESET );
+                    printf(ANSI_COLOR_WHITE     "   "     ANSI_COLOR_RESET );
                     break;
                 case 4:
-                    printf(ANSI_COLOR_YELLOW    "[]\t"     ANSI_COLOR_RESET );
+                    printf(ANSI_COLOR_YELLOW    "   "     ANSI_COLOR_RESET );
                     break;
                 case 5:
-                    printf(ANSI_COLOR_GREEN     "[]\t"     ANSI_COLOR_RESET );
+                    printf(ANSI_COLOR_GREEN     "   "     ANSI_COLOR_RESET );
                     break;
                 case 6:
-                    printf(ANSI_COLOR_MAGENTA     "[]\t"     ANSI_COLOR_RESET );
+                    printf(ANSI_COLOR_MAGENTA     "   "     ANSI_COLOR_RESET );
                     break;
                 case 7:
-                    printf(ANSI_COLOR_RED     "[]\t"     ANSI_COLOR_RESET );
+                    printf(ANSI_COLOR_RED       "   "     ANSI_COLOR_RESET );
                     break;
             }
         }
-        printf("\n\n");
+        printf("\n");
     }
-    printf("\n");
-    printf("\t\t");
+
+    printf("\t\t\t\t");
     for (i = 0; i < WIDTH; i++)
-        printf("%d\t", i);
+        printf(" %d ", i);
 
 }
 
@@ -595,32 +651,41 @@ void printField(int matrix[HEIGHT][WIDTH]) {
 void print_tetramini(char type, int size) {
     switch (type) {
         case 'i':
-            printf("# # # #\t: %d\n\n", size);
+            printf("i\n");
+            printf(ANSI_COLOR_CYAN"            "ANSI_COLOR_RESET " : %d\n\n", size);
             break;
 
         case 'j':
-            printf("#\n"
-                   "# # #\t: %d\n\n", size);
+            printf("j\n");
+            printf("   " ANSI_COLOR_BLUE "   " ANSI_COLOR_RESET "\n"
+                   "   "ANSI_COLOR_BLUE "   " ANSI_COLOR_RESET "\n"
+                   ANSI_COLOR_BLUE"      " ANSI_COLOR_RESET "\t\t: %d\n\n" , size);
             break;
         case 'l':
-            printf("\t#\n"
-                   "# # #\t: %d\n\n", size);
+            printf("l\n");
+            printf(ANSI_COLOR_WHITE"   "ANSI_COLOR_RESET "\n"
+                   ANSI_COLOR_WHITE"   "ANSI_COLOR_RESET "\n"
+                   ANSI_COLOR_WHITE"      "ANSI_COLOR_RESET "\t\t: %d\n\n", size);
             break;
         case 'o':
-            printf("# #\n"
-                   "# #\t\t: %d\n\n", size);
+            printf("o\n");
+            printf(ANSI_COLOR_YELLOW"      " ANSI_COLOR_RESET "\n"
+                   ANSI_COLOR_YELLOW"      " ANSI_COLOR_RESET "\t\t: %d\n\n", size);
             break;
         case 's':
-            printf("  # #\n"
-                   "# #\t\t: %d\n\n", size);
+            printf("s\n");
+            printf("   " ANSI_COLOR_GREEN "      " ANSI_COLOR_RESET "\n"
+                   ANSI_COLOR_GREEN "      " ANSI_COLOR_RESET "\t\t:%d\n\n", size);
             break;
         case 't':
-            printf("  #\n"
-                   "# # #\t: %d\n\n", size);
+            printf("t\n");
+            printf("   " ANSI_COLOR_MAGENTA "   " ANSI_COLOR_RESET "\n"
+                   ANSI_COLOR_MAGENTA "         " ANSI_COLOR_RESET "\t:%d\n\n", size);
             break;
         case 'z':
-            printf("# #\n"
-                   "  # #\t: %d\n\n", size);
+            printf("z\n");
+            printf(ANSI_COLOR_RED "      " ANSI_COLOR_RESET "\n"
+                   "   " ANSI_COLOR_RED "      " ANSI_COLOR_RESET "\t:%d\n\n", size);
             break;
     }
 }
