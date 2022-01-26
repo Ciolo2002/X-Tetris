@@ -75,7 +75,6 @@ const int Z[4][4] = {
 typedef struct player {
     unsigned int points;
     int field[HEIGHT][WIDTH];
-    int avaiable_tetramini[TETRAMINO_TYPES];
     int deleted_rows;
 
 
@@ -92,6 +91,9 @@ typedef struct tetramino {
 typedef struct game {
     player_t *players;
 } game_t;
+
+
+
 
 
 void swapRows(int deleted_rows, player_t *opponent) {
@@ -124,29 +126,23 @@ int changePlayer(int game_type, int player_selector) {
 }
 
 
-void youLose(player_t *player) {
-    int i;
+int youLose(player_t *player, int *avaiable_tetramini) {
+    int i, temp=0;
     for (i = 0; i < TETRAMINO_TYPES; i++) {
-        if (player->avaiable_tetramini[i] != 0) {
-            return;
+        if (avaiable_tetramini[i] != 0) {
+            temp=1;
+            break;
         }
     }
-    printf("\nHai finito tutti i tetramini!!!\n");
-    exit(0);
-}
-
-
-/**
- * Inizializza un giocatore prima di iniziare la partita:
- * in particolare setta la quantità di tetramini a disposizione per tipo.
- * @param player
- */
-void player_initializer(player_t *player) {
-    int i = 0;
-    for (i = 0; i < TETRAMINO_TYPES; i++) {
-        player->avaiable_tetramini[i] = n_tetramini_per_type;
+    if(temp==0){
+        free(avaiable_tetramini);
+        printf("\nHai finito tutti i tetramini!!!\n");
     }
+    return temp;
 }
+
+
+
 
 
 /**
@@ -207,7 +203,6 @@ int deleteRows(int campo[HEIGHT][WIDTH]) {
  */
 void place_tetramino(int pField[HEIGHT][WIDTH], tetramino_t *pTetramino, int colonna, int riga) {
     int i, j, bool_placed = 0;
-    printf("RICDW %d", riga);
     for (i = TETRAMINO_LATO - 1; i >= 0; i--) {
         for (j = TETRAMINO_LATO - 1; j >= 0; j--) {
             if (pTetramino->pieces[i][j] != 0) {
@@ -216,18 +211,15 @@ void place_tetramino(int pField[HEIGHT][WIDTH], tetramino_t *pTetramino, int col
             }
         }
         if (bool_placed) { /** posizionamento della riga superiore del campo da gioco*/
-            riga--;
             if(riga<0){
                 /** il giocatore ha sforato in altezza il campo da gioco quindi ha perso*/
                 printf("Sei arrivato in alto hai perso!!!");
                 exit(0);
             }
-            printf("Riga %d \n",  riga);
-
+            riga--;
         }
         bool_placed = 0;
     }
-    printf("\n");
 }
 
 
@@ -422,71 +414,71 @@ void copyTetramino(tetramino_t *copy, const int source[TETRAMINO_LATO][TETRAMINO
     }
 }
 
-int getLastTetramino(tetramino_t *da_inserire, char type, player_t *player) {
+int getLastTetramino(tetramino_t *da_inserire, char type, player_t *player, int * avaiable_tetramini) {
     int isOkay = 1;
     switch (type) {
         case 'i':
-            if (player->avaiable_tetramini[0] <= 0) {
+            if (avaiable_tetramini[0] <= 0) {
                 printf("\nI tetramini a disposizione di tipo %c sono finiti\n", type);
                 isOkay = 0;
                 break;
             }
             copyTetramino(da_inserire, I);
-            --player->avaiable_tetramini[0];
+            --avaiable_tetramini[0];
             break;
         case 'j':
-            if (player->avaiable_tetramini[1] <= 0) {
+            if (avaiable_tetramini[1] <= 0) {
                 printf("\nI tetramini a disposizione di tipo %c sono finiti\n", type);
                 isOkay = 0;
                 break;
             }
             copyTetramino(da_inserire, J);
-            --player->avaiable_tetramini[1];
+            --avaiable_tetramini[1];
             break;
         case 'l':
-            if (player->avaiable_tetramini[2] <= 0) {
+            if (avaiable_tetramini[2] <= 0) {
                 printf("\nI tetramini a disposizione di tipo %c sono finiti\n", type);
                 isOkay = 0;
                 break;
             }
             copyTetramino(da_inserire, L);
-            --player->avaiable_tetramini[2];
+            --avaiable_tetramini[2];
             break;
         case 'o':
-            if (player->avaiable_tetramini[3] <= 0) {
+            if (avaiable_tetramini[3] <= 0) {
                 printf("\nI tetramini a disposizione di tipo %c sono finiti\n", type);
                 isOkay = 0;
                 break;
             }
             copyTetramino(da_inserire, O);
-            --player->avaiable_tetramini[3];
+            --avaiable_tetramini[3];
             break;
         case 's':
-            if (player->avaiable_tetramini[4] <= 0) {
+            if (avaiable_tetramini[4] <= 0) {
                 printf("\nI tetramini a disposizione di tipo %c sono finiti\n", type);
                 isOkay = 0;
                 break;
             }
             copyTetramino(da_inserire, S);
-            --player->avaiable_tetramini[4];
+            --avaiable_tetramini[4];
             break;
         case 't':
-            if (player->avaiable_tetramini[5] <= 0) {
+            if (avaiable_tetramini[5] <= 0) {
                 printf("\nI tetramini a disposizione di tipo %c sono finiti\n", type);
                 isOkay = 0;
                 break;
             }
             copyTetramino(da_inserire, T);
-            --player->avaiable_tetramini[5];
+            --avaiable_tetramini[5];
             break;
         case 'z':
-            if (player->avaiable_tetramini[6] <= 0) {
+            if (avaiable_tetramini[6] <= 0) {
                 printf("\nI tetramini a disposizione di tipo %c sono finiti\n", type);
                 isOkay = 0;
                 break;
             }
             copyTetramino(da_inserire, Z);
-            --player->avaiable_tetramini[6];
+            --avaiable_tetramini[6];
             break;
         default:
             printf("Rotto");
