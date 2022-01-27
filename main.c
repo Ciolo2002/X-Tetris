@@ -3,14 +3,6 @@
 #include <time.h>
 #include "tetralib.h"
 
-
-/* LISTA DEI BUG/COSE DA FARE:
- *  5. sistemare la documentazione secondo gli standard Doxygen (Spanò ha scritto una mail a riguardo dove indica dove andare a vedere come si fa a commentare )
- *  7. Distinguere visivamente (colori o testo diverso) chi sta giocando
- *  9. implementare la cpu posiziona random: occhio ai casi limite anche lei deve poter ripetere la mossa se va fuori a destra e sinistra
- *  10. togliere commenti inutili e sopratutto quelli fatti con //
- *  11. Fare la relazione*/
-
 int main() {
     int i, rotation_selection, column, player_selector = 0, loser;
     int *available_tetramini;
@@ -18,7 +10,6 @@ int main() {
     int game_type;
     char type_selection;
     game_t game;
-
 
     player_t empty_player = {0, {0},0};
 
@@ -61,11 +52,7 @@ int main() {
         }
     }
 
-    while (1) {
-
-        loser = checkLose(game, player_selector, available_tetramini, game_type);
-        if(loser == 1)
-            exit(0);
+    while (checkLose(game, player_selector, available_tetramini, game_type)) {
 
         if(game_type != 3 || player_selector == 0) {
             printf("\nAVAIABLE TETRAMINI: \n\n");
@@ -109,12 +96,12 @@ int main() {
         }
 
 
-        if (exception_t_r(type_selection, rotation_selection) == 0) {
-            if (getLastTetramino(&da_inserire, type_selection, &game.players[player_selector], available_tetramini) != 0) {
+        if (exception_t_r(type_selection, rotation_selection, game_type, player_selector) == 0) {
+            if (getLastTetramino(&da_inserire, type_selection, &game.players[player_selector], available_tetramini, game_type, player_selector) != 0) {
                 da_inserire = edit_tetramino(type_selection, rotation_selection, &game.players[player_selector],
                                              da_inserire);
-                if (exception_width(&da_inserire, column, available_tetramini) == 0) {
-                    addTetramino(&da_inserire, game.players[player_selector].field, column);
+                if (exception_width(&da_inserire, column, available_tetramini, game_type, player_selector) == 0) {
+                    addTetramino(&da_inserire, game.players[player_selector].field, column, player_selector);
                     game.players[player_selector].deleted_rows = (deleteRows(game.players[player_selector].field));
                     if(game_type == 3 && player_selector == 1){
                         printf("\n");

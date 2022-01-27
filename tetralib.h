@@ -15,23 +15,6 @@
 #define ANSI_COLOR_BLACK   "\e[40m"
 #define ANSI_COLOR_RESET   "\x1b[0m"
 
-/**
- * Variabili deprecate siccome ora si trovano all'interno
- * di un vettore nella struttra del player.
- * Ogni cella di quel vettore contiene il numero di tetramini per tipo.
- *
- * L'ordine di posizione da 0 a 6 celle di quel vettore rispecchia rispettivamente dall'alto al basso
- * l'ordine di queste variaibli:
- * quindi i_size sara [0] .... fino a z_size che sarà [6]
- */
-/*int i_size = n_tetramini_per_type;
-int j_size = n_tetramini_per_type;
-int l_size = n_tetramini_per_type;
-int o_size = n_tetramini_per_type;
-int s_size = n_tetramini_per_type;
-int t_size = n_tetramini_per_type;
-int z_size = n_tetramini_per_type; */
-
 
 const int I[4][4] = {
         {1, 0, 0, 0},
@@ -103,7 +86,9 @@ typedef struct game {
     player_t *players;
 } game_t;
 
-
+/**
+ * Stampa il logo di X-Tetris(ascii art)
+ */
 void printLogo(){
 
  printf("    ██╗  ██╗  ████████╗███████╗████████╗██████╗ ██╗███████╗ \n");
@@ -116,7 +101,10 @@ void printLogo(){
 }
 
 
-
+/**
+ * funzione che ritorna un carattere random tra i,j,l,o,s,t,z per la CPU
+ * @return un carattere tra i,j,l,o,s,t,z
+ */
 char randomType(){
     srand(time(NULL));
     int r= rand() % 8 - 1;
@@ -149,19 +137,32 @@ char randomType(){
     }
     return type;
 }
-
+/**
+ * funzione che ritorna un numero random da 1 a 4 per la rotazione del tetramino scelto dalla CPU
+ * @return un numero random da 1 a 4
+ */
 int randomRotation(){
     srand(time(NULL));
     int r = rand() % 4 + 1;
     return r;
 }
 
+/**
+ * funzione che ritorna la colonna random in cui la CPU va a posizionare un tetramino
+ * @return una colonna random tra 0 e 9
+ */
 int randomColumn(){
     srand(time(NULL));
     int r = rand() % 10;
     return r;
 }
 
+/**
+ * se vengono eliminate 3 o più righe nello stesso istante il campo dell’avversario viene modificato invertendo il corrispondente
+ * numero di linee nella parte più bassa del campo di gioco
+ * @param deleted_rows
+ * @param opponent
+ */
 void swapRows(int deleted_rows, player_t *opponent) {
     int i, j;
     if (deleted_rows >= 3) {
@@ -177,7 +178,12 @@ void swapRows(int deleted_rows, player_t *opponent) {
     }
 }
 
-
+/**
+ * cambia il giocatore che sta giocando con il suo avversario per prepararsi al turno successivo
+ * @param game_type
+ * @param player_selector
+ * @return il numero relativo al giocatore che giocherà nel prossimo round
+ */
 int changePlayer(int game_type, int player_selector) {
     if (game_type == 1) {  /* selettore del giocatore */
         player_selector = 0;
@@ -191,7 +197,12 @@ int changePlayer(int game_type, int player_selector) {
     return player_selector;
 }
 
-
+/**
+ * controlla se il giocatore finisce tutti i suoi tetramini e quindi è destinato a perdere la partita
+ * @param player
+ * @param avaiable_tetramini
+ * @return 0 se il giocatore ha finito i tetramini a disposizione o 1 se ha ancora tetramini disponibili
+ */
 int youLose(player_t *player, int *avaiable_tetramini) {
     int i, temp=0;
     for (i = 0; i < TETRAMINO_TYPES; i++) {
@@ -202,14 +213,20 @@ int youLose(player_t *player, int *avaiable_tetramini) {
     }
     if(temp==0){
         free(avaiable_tetramini);
-        printf("\nHai finito tutti i tetramini!!!\n");
+        printf("\nYOU HAVE FINISHED ALL OF YOUR TETRAMINI\n");
     }
     return temp;
 }
 
-
+/**
+ * Se i giocatori hanno finito i tetramini vince chi ha il punteggio maggiore
+ * @param game
+ * @param player_selector
+ * @param avaiable_tetramini
+ * @param game_type
+ */
 int checkLose( game_t game, int player_selector, int * avaiable_tetramini, int game_type){
-    int loser = 0;
+    int loser = 1;
     loser = youLose(&game.players[player_selector], avaiable_tetramini);
     if (loser == 0) {
 
@@ -223,9 +240,10 @@ int checkLose( game_t game, int player_selector, int * avaiable_tetramini, int g
             }
         }
         free(game.players);
-        return 1;
+        exit(0);
+        return loser;
     }
-    return 0;
+    return loser;
 }
 
 
@@ -250,7 +268,7 @@ void pushFieldDown(int campo[HEIGHT][WIDTH], int col) {
 }
 
 /**
- *Questa funnzione cerca le righe del campo da gioco dove non ci sono 0
+ *Questa funzione cerca le righe del campo da gioco dove non ci sono 0
  * come nel gioco del vero tetris in quel caso, l'intera riga viene elimata ed il resto di campo di gioco spostato in basso
  * @param campo
  * @return  Il numero di righe che sono state eliminate, utile per calcolare il punteggio.
@@ -277,7 +295,6 @@ int deleteRows(int campo[HEIGHT][WIDTH]) {
     return deleted_rows;
 }
 
-
 /**
  * Va a tutti gli effetti a piazzare il tetramino nel campo da gioco
  * @param pField
@@ -285,7 +302,7 @@ int deleteRows(int campo[HEIGHT][WIDTH]) {
  * @param colonna
  * @param riga
  */
-void place_tetramino(int pField[HEIGHT][WIDTH], tetramino_t *pTetramino, int colonna, int riga) {
+void place_tetramino(int pField[HEIGHT][WIDTH], tetramino_t *pTetramino, int colonna, int riga, int player_selector) {
     int i, j, bool_placed = 0;
     for (i = TETRAMINO_LATO - 1; i >= 0; i--) {
         for (j = TETRAMINO_LATO - 1; j >= 0; j--) {
@@ -297,7 +314,11 @@ void place_tetramino(int pField[HEIGHT][WIDTH], tetramino_t *pTetramino, int col
         if (bool_placed) { /** posizionamento della riga superiore del campo da gioco*/
             if(riga<0){
                 /** il giocatore ha sforato in altezza il campo da gioco quindi ha perso*/
-                printf("Sei arrivato in alto hai perso!!!");
+                if(player_selector == 0)
+                    printf("\n\nGAME OVER, PLAYER 2 WON");
+                else
+                    printf("\n\nGAME OVER, PLAYER 1 WON");
+
                 exit(0);
             }
             riga--;
@@ -308,9 +329,9 @@ void place_tetramino(int pField[HEIGHT][WIDTH], tetramino_t *pTetramino, int col
 
 
 /**
- * ritorna maggiore lunghezza del tetramino che riceve in base alla sua rotazione attuale
+ * ritorna la maggiore lunghezza del tetramino che riceve in base alla sua rotazione attuale
  * @param pTetramino
- * @return
+ * @return la lunghezza maggiore possibile del tetramino in base alla sua rotazione
  */
 int maxTetraminoWidth(tetramino_t *pTetramino) {
     int max_tetramino_width = 0, i, j, j_record = -1;
@@ -332,13 +353,13 @@ int maxTetraminoWidth(tetramino_t *pTetramino) {
 
 /**
  * Controlla che la scelta del giocatore non porti fuori a destra o a sinistra il tetramino dal campo da gioco, poi
- * controlla se un tetramino ci sta nel campo da gioco ed eventalmete in quale riga andarlo a piazzare,
+ * controlla se un tetramino ci sta nel campo da gioco ed eventualmente in quale riga andarlo a piazzare,
  * dopodichè una volta trovata la riga chiama place_tetramino e lo piazza oppure fa perdere il giocatore
  * @param da_inserire
  * @param field
  * @param col
  */
-void addTetramino(tetramino_t *da_inserire, int field[HEIGHT][WIDTH], int col) {
+void addTetramino(tetramino_t *da_inserire, int field[HEIGHT][WIDTH], int col, int player_selector) {
 
     int i, j, z, temp = -1, calcomagicoastrale = 0;
 
@@ -358,11 +379,11 @@ void addTetramino(tetramino_t *da_inserire, int field[HEIGHT][WIDTH], int col) {
             }
 
         if (temp != -1) { /** una volta trovata la riga dove posizionare il tetramino, lo vado effettivamente ad inserire nel campo da gioco*/
-            place_tetramino(field, da_inserire, col, i-1);
+            place_tetramino(field, da_inserire, col, i-1, player_selector);
             return;
         }
     }
-    place_tetramino(field, da_inserire, col, i-1);
+    place_tetramino(field, da_inserire, col, i-1, player_selector);
     return;
 
 }
@@ -371,7 +392,7 @@ void addTetramino(tetramino_t *da_inserire, int field[HEIGHT][WIDTH], int col) {
 /**
  * Porta i valori del tetramino giù di 1 riga nella matrice che lo contiene
  * @param tetramino
- * @return
+ * @return il tetramino
  */
 tetramino_t pushTetraminoDown(tetramino_t tetramino) {
     int swapCount = 1;
@@ -390,7 +411,7 @@ tetramino_t pushTetraminoDown(tetramino_t tetramino) {
 /**
  * Porta i valori del tetramino a sinistra di 1 riga nella matrice che lo contiene
  * @param tetramino
- * @return
+ * @return il tetramino
  */
 tetramino_t
 pushTetraminoLeft(tetramino_t tetramino) {
@@ -416,7 +437,7 @@ pushTetraminoLeft(tetramino_t tetramino) {
 /**
  * Ritorna 1 se tutta l'ultima riga del tetramino è composta di soli 0
  * @param tetramino
- * @return
+ * @return 1 se tutta l'ultima riga del tetramino è composta di soli 0, sennò ritorna 0
  */
 int checkEmptyLastRow(tetramino_t tetramino) {
     int cnt;
@@ -431,7 +452,7 @@ int checkEmptyLastRow(tetramino_t tetramino) {
 /**
  * Ritorna 1 se la prima colonna del tetramino è composta di soli 0
  * @param tetramino
- * @return
+ * @return 1 se la prima colonna del tetramino è composta di soli 0, sennò ritorna 0
  */
 int checkEmptyLeftColumn(tetramino_t tetramino) {
     int cnt;
@@ -442,22 +463,11 @@ int checkEmptyLeftColumn(tetramino_t tetramino) {
     return 1;
 }
 
-
 /**
- * stampa l'effettivo tetramino, si può usare anche solo per fare i test e poi per giocare usariamo l'altra print che è più carina.
- * @param tetramino
+ * ruota il tetramino in base alla sua rotazione
+ * @param tetramino1
+ * @return il tetramino ruotato
  */
-void print_realTetramino(tetramino_t tetramino) {
-    int i, j;
-    for (i = 0; i < TETRAMINO_LATO; i++) {
-        for (j = 0; j < TETRAMINO_LATO; j++) {
-            printf("%d", tetramino.pieces[i][j]);
-        }
-        printf("\n");
-    }
-}
-
-
 tetramino_t rotateTetramino(tetramino_t tetramino1) {
     tetramino_t temp = tetramino1;
     int i, j;
@@ -498,12 +508,24 @@ void copyTetramino(tetramino_t *copy, const int source[TETRAMINO_LATO][TETRAMINO
     }
 }
 
-int getLastTetramino(tetramino_t *da_inserire, char type, player_t *player, int * avaiable_tetramini) {
+/**
+ * controlla se sono disponibili tetramini del tipo inserito, se sì decrementa il numero di tetramini disponibili, se no ritorna 0
+ * @param da_inserire
+ * @param type
+ * @param player
+ * @param avaiable_tetramini
+ * @param game_type
+ * @param player_selector
+ * @return 1 se il tetramino di tipo type è disponibile, 0 se non è disponibile
+ */
+int getLastTetramino(tetramino_t *da_inserire, char type, player_t *player, int * avaiable_tetramini, int game_type, int player_selector) {
     int isOkay = 1;
     switch (type) {
         case 'i':
             if (avaiable_tetramini[0] <= 0) {
-                printf("\nI tetramini a disposizione di tipo %c sono finiti\n", type);
+                if(game_type != 3 || player_selector == 0) {
+                    printf("\nI tetramini a disposizione di tipo %c sono finiti\n", type);
+                }
                 isOkay = 0;
                 break;
             }
@@ -512,8 +534,9 @@ int getLastTetramino(tetramino_t *da_inserire, char type, player_t *player, int 
             break;
         case 'j':
             if (avaiable_tetramini[1] <= 0) {
-                printf("\nI tetramini a disposizione di tipo %c sono finiti\n", type);
-                isOkay = 0;
+                if(game_type != 3 || player_selector == 0) {
+                    printf("\nI tetramini a disposizione di tipo %c sono finiti\n", type);
+                }                isOkay = 0;
                 break;
             }
             copyTetramino(da_inserire, J);
@@ -521,8 +544,9 @@ int getLastTetramino(tetramino_t *da_inserire, char type, player_t *player, int 
             break;
         case 'l':
             if (avaiable_tetramini[2] <= 0) {
-                printf("\nI tetramini a disposizione di tipo %c sono finiti\n", type);
-                isOkay = 0;
+                if(game_type != 3 || player_selector == 0) {
+                    printf("\nI tetramini a disposizione di tipo %c sono finiti\n", type);
+                }                isOkay = 0;
                 break;
             }
             copyTetramino(da_inserire, L);
@@ -530,8 +554,9 @@ int getLastTetramino(tetramino_t *da_inserire, char type, player_t *player, int 
             break;
         case 'o':
             if (avaiable_tetramini[3] <= 0) {
-                printf("\nI tetramini a disposizione di tipo %c sono finiti\n", type);
-                isOkay = 0;
+                if(game_type != 3 || player_selector == 0) {
+                    printf("\nI tetramini a disposizione di tipo %c sono finiti\n", type);
+                }                isOkay = 0;
                 break;
             }
             copyTetramino(da_inserire, O);
@@ -539,8 +564,9 @@ int getLastTetramino(tetramino_t *da_inserire, char type, player_t *player, int 
             break;
         case 's':
             if (avaiable_tetramini[4] <= 0) {
-                printf("\nI tetramini a disposizione di tipo %c sono finiti\n", type);
-                isOkay = 0;
+                if(game_type != 3 || player_selector == 0) {
+                    printf("\nI tetramini a disposizione di tipo %c sono finiti\n", type);
+                }                isOkay = 0;
                 break;
             }
             copyTetramino(da_inserire, S);
@@ -548,8 +574,9 @@ int getLastTetramino(tetramino_t *da_inserire, char type, player_t *player, int 
             break;
         case 't':
             if (avaiable_tetramini[5] <= 0) {
-                printf("\nI tetramini a disposizione di tipo %c sono finiti\n", type);
-                isOkay = 0;
+                if(game_type != 3 || player_selector == 0) {
+                    printf("\nI tetramini a disposizione di tipo %c sono finiti\n", type);
+                }                isOkay = 0;
                 break;
             }
             copyTetramino(da_inserire, T);
@@ -557,8 +584,9 @@ int getLastTetramino(tetramino_t *da_inserire, char type, player_t *player, int 
             break;
         case 'z':
             if (avaiable_tetramini[6] <= 0) {
-                printf("\nI tetramini a disposizione di tipo %c sono finiti\n", type);
-                isOkay = 0;
+                if(game_type != 3 || player_selector == 0) {
+                    printf("\nI tetramini a disposizione di tipo %c sono finiti\n", type);
+                }                isOkay = 0;
                 break;
             }
             copyTetramino(da_inserire, Z);
@@ -571,9 +599,13 @@ int getLastTetramino(tetramino_t *da_inserire, char type, player_t *player, int 
     return isOkay;
 }
 
-
 /**
- * Funzione che crea effettivamente il tetramino e decrementa la quantità di tetramini a disposizione
+ * Funzione che crea effettivamente il tetramino
+ * @param type
+ * @param rotation
+ * @param player
+ * @param da_inserire
+ * @return il tetramino
  */
 tetramino_t edit_tetramino(char type, int rotation, player_t *player, tetramino_t da_inserire) {
     da_inserire.type = type;
@@ -643,7 +675,7 @@ void printField(int matrix[HEIGHT][WIDTH]) {
 }
 
 /**
- * Funzione che stampa la forma di un tetrsamino e quanti te ne restano a disposizione
+ * Funzione che stampa la forma di un dato tetramino e quanti restano a disposizione del player
  * @param type
  * @param size
  *
@@ -690,14 +722,25 @@ void print_tetramini(char type, int size) {
     }
 }
 
-
-int exception_t_r(char type, int rotation) {
+/**
+ * la funzione ritorna 1 se il tipo o la rotazione dati al tetramino non sono validi, sennò ritorna 0
+ * @param type
+ * @param rotation
+ * @param game_type
+ * @param player_selector
+ * @return 1 o 0
+ */
+int exception_t_r(char type, int rotation, int game_type, int player_selector) {
     if (type != 'i' && type != 'z' && type != 't' && type != 's' && type != 'l' && type != 'o' && type != 'j') {
-        printf("\nSelezione non valida\n");
+        if(game_type != 3 || player_selector == 0) {
+            printf("\nSelezione non valida\n");
+        }
         return 1;
     }
     if (rotation < 1 || rotation > 4) {
-        printf("\nRotazione non valida\n");
+        if(game_type != 3 || player_selector == 0) {
+            printf("\nRotazione non valida\n");
+        }
         return 1;
     }
     return 0;
@@ -705,20 +748,21 @@ int exception_t_r(char type, int rotation) {
 
 
 /**
- *
+ * la funzione gestisce l'errore in caso un tetramino venga posizionato al di fuori del campo a destra o a sinistra,
+ * inoltre incrementa la quantità di tetramini a disposizione per il tipo indicato, dato che verrebbe decrementata senza posizionare nessun tetramino
  * @param da_inserire
  * @param col
  * @param avaiable_tetramini
- * @return
- *
- * la funzione gestisce l'errore in caso un tetramino venga posizionato al di fuori del campo a destra o a sinistra,
- * inoltre incrementa la quantità di tetramini a disposizione per il tipo indicato, dato che verrebbe decrementata senza posizionare nessun tetramino
+ * @return 1 o 0
  */
-int exception_width(tetramino_t * da_inserire, int col, int * avaiable_tetramini) {
+int exception_width(tetramino_t * da_inserire, int col, int * avaiable_tetramini, int game_type, int player_selector) {
     int lunghezza_max_tetramino;
     lunghezza_max_tetramino = maxTetraminoWidth(da_inserire);
     if ((col + lunghezza_max_tetramino) > WIDTH || (col + lunghezza_max_tetramino) <= 0) {
-        printf("\nNon puoi posizione un tetramino fuori dal campo di gioco.\n");
+        if(game_type != 3 || player_selector == 0) {
+            printf("\nNon puoi posizione un tetramino fuori dal campo di gioco.\n");
+        }
+
 
         switch(da_inserire->type){
             case 'i':
@@ -749,6 +793,12 @@ int exception_width(tetramino_t * da_inserire, int col, int * avaiable_tetramini
     return 0;
 }
 
+
+/**
+ * incrementa i punti del giocatore in base a quante righe sono state eliminate
+ * @param result
+ * @param cnt
+ */
 void increment_points(unsigned int *result, int *cnt) {
     switch (*cnt) {
         case 1:
